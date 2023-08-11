@@ -2,6 +2,12 @@ const Question = require("../model/question");
 const Bookmark = require("../model/bookmark");
 const Answer = require("../model/answer");
 
+/**
+     * This function accept data and create question
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // post a question
 exports.createQuestion = async (req, res) => {
     if (Object.keys(req.body).length === 0) {

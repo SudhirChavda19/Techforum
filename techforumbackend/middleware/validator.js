@@ -1,5 +1,5 @@
 const {
-    body, validationResult, check, query,
+    body, validationResult, check, query, param,
 } = require("express-validator");
 
 const signUpValidation = () => [
@@ -33,24 +33,43 @@ const searchValidation = () => [
 const questionValidate = () => [
     body("userId").notEmpty().isLength(24).withMessage("userId must have length of 24"),
     body("question").notEmpty().trim(),
-    // body("questionDescribe"),
     body("tags").trim(),
 ];
-const anwerValidatePost = () => [
-    body("userId").notEmpty().trim().isLength(24)
-        .withMessage("userId must have 24 character"),
-    body("questionId").notEmpty().trim().isLength(24)
-        .withMessage("questionId must have 24 character"),
-    body("answer").notEmpty().trim().withMessage("enter answer of the question"),
+const postAnswerValidation = () => [
+    body("userId").notEmpty().withMessage("userId can't be empty").trim()
+        .isLength({ min: 24 })
+        .withMessage("Invalid userId")
+        .isLength({ max: 24 })
+        .withMessage("Invalid userId"),
+    body("questionId").notEmpty().withMessage("questionId can't be empty").trim()
+        .isLength({ min: 24 })
+        .withMessage("Invalid questionId")
+        .isLength({ max: 24 })
+        .withMessage("Invalid questionId"),
+    body("answer").notEmpty().withMessage("answer can't be empty").trim(),
 ];
 
-const answerValidateGetById = () => [
-    query("questionId").notEmpty().trim().isLength(24)
-        .withMessage("question id can't be empyt and must have 24 character"),
+const getAnswerByIdValidation = () => [
+    param("questionId").notEmpty().withMessage("enter questionId in params").trim()
+        .isLength({ min: 24 })
+        .withMessage("Invalid questionId in param")
+        .isLength({ max: 24 })
+        .withMessage("Invalid questionId in param"),
 ];
-const answerValidatePatch = () => [
-    query("Id").notEmpty().trim().isLength(24)
-        .withMessage("question id can't be empyt and must have 24 character"),
+const updateAnswerValidation = () => [
+    param("id").notEmpty().withMessage("enter answerId in params").trim()
+        .isLength({ min: 24 })
+        .withMessage("Invalid answerId in param")
+        .isLength({ max: 24 })
+        .withMessage("Invalid answerId in param"),
+    body("answer").notEmpty().withMessage("answer can't be empty").trim(),
+];
+const deleteAnswerValidation = () => [
+    param("id").notEmpty().withMessage("enter answerId in params").trim()
+        .isLength({ min: 24 })
+        .withMessage("Invalid answerId in param")
+        .isLength({ max: 24 })
+        .withMessage("Invalid answerId in param"),
 ];
 
 // const blogValidatePost = () => [
@@ -62,13 +81,15 @@ const answerValidatePatch = () => [
 
 const validate = (req, res, next) => {
     const errors = validationResult(req);
+    // console.log("Error")
     if (errors.isEmpty()) {
         return next();
     }
     // const extractedErrors = [];
     // errors.array().map((err) => extractedErrors.push({ [err.path]: err.msg }));
-    return res.status(422).json({
-        errors,
+    return res.status(400).json({
+        status: "Failed",
+        error: errors.msg,
     });
 };
 
@@ -78,7 +99,9 @@ module.exports = {
     signInValidation,
     searchValidation,
     questionValidate,
-    anwerValidatePost,
-    answerValidateGetById,
-    answerValidatePatch,
+    getAnswerByIdValidation,
+    updateAnswerValidation,
+    postAnswerValidation,
+    deleteAnswerValidation,
+
 };

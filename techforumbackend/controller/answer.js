@@ -2,80 +2,7 @@ const Answer = require("../model/answer");
 
 // creates an answer to that question
 exports.addAnswer = async (req, res) => {
-    if (Object.keys(req.body).length === 0) {
-        return res
-            .status(404)
-            .json({
-                status: 404,
-                message: "Data not Found",
-            });
-    }
-    let { answer, userId, questionId } = req.body;
-    if (userId === undefined) {
-        return res
-            .status(400)
-            .json({
-                status: 400,
-                message: "UserId not found",
-            });
-    }
-    userId = userId.trim();
-    if (userId.length === 0) {
-        return res
-            .status(400)
-            .json({
-                status: 400,
-                message: "UserId can't be empty",
-            });
-    }
-    if (userId.length !== 24) {
-        return res.status(400).json({
-            status: 400,
-            message: "Enter Invalid user id",
-        });
-    }
-
-    if (answer === undefined) {
-        return res
-            .status(400)
-            .json({
-                status: 400,
-                message: "Answer not found",
-            });
-    }
-    answer = answer.trim();
-    if (answer.length === 0) {
-        return res
-            .status(400)
-            .json({
-                status: 400,
-                message: "Answer can't be empty",
-            });
-    }
-
-    if (questionId === undefined) {
-        return res
-            .status(400)
-            .json({
-                status: 400,
-                message: "Question Id not found",
-            });
-    }
-    questionId = questionId.trim();
-    if (questionId.length === 0) {
-        return res
-            .status(400)
-            .json({
-                status: 400,
-                message: "QuestionId can't be empty",
-            });
-    }
-    if (questionId.length !== 24) {
-        return res.status(400).json({
-            status: 400,
-            message: "Enter Invalid question id",
-        });
-    }
+    const { answer, userId, questionId } = req.body;
     const addAnswer = new Answer({
         userId,
         questionId,
@@ -99,14 +26,14 @@ exports.addAnswer = async (req, res) => {
 // get answer to that question
 exports.getAnswerByquestionId = async (req, res) => {
     try {
-        let { questionId } = req.params;
-        questionId = questionId.trim();
-        if (questionId.length !== 24) {
-            return res.status(400).json({
-                status: 400,
-                message: "Invalid question id",
-            });
-        }
+        const { questionId } = req.params;
+        // questionId = questionId.trim();
+        // if (questionId.length !== 24) {
+        //     return res.status(400).json({
+        //         status: 400,
+        //         message: "Invalid question id",
+        //     });
+        // }
         const getanswer = await Answer.find({
             questionId,
         }).populate([

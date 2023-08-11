@@ -5,6 +5,12 @@ const User = require("../model/user");
 require("dotenv").config();
 
 module.exports = {
+    /**
+     * This function accept data and create a new user
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object}
+     */
     signUp: async (req, res) => {
         const {
             firstName,
@@ -13,13 +19,12 @@ module.exports = {
             password,
             confirmPassword,
         } = req.body;
-
-        const result = validationResult(req);
+        // const result = validationResult(req);
         // if (result.isEmpty()) {
         //     return res.send(`Hello, ${req.query.person}!`);
         // }
 
-        res.send({ errors: result.array() });
+        // res.send({ errors: result.array() });
 
         // const namePattern = /^[a-zA-Z]+$/;
         // if (Object.keys(req.body).length === 0) {
@@ -123,12 +128,12 @@ module.exports = {
         //         .json({ status: 400, message: "Confirm Password can't be empty" });
         // }
 
-        if (password !== confirmPassword) {
-            return res.status(400).json({
-                status: 400,
-                message: "Password not matched",
-            });
-        }
+        // if (password !== confirmPassword) {
+        //     return res.status(400).json({
+        //         status: 400,
+        //         message: "Password not matched",
+        //     });
+        // }
 
         const existingUser = await User.findOne({ emailId });
         if (existingUser) {
