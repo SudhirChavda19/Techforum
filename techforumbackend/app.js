@@ -19,7 +19,6 @@ const manageResourcesRoutes = require("./route/manageResource");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-console.log("=======", process.env.SALT);
 const connectToDatabase = async () => {
     try {
         await mongoose.connect(process.env.MONGODB_URI, {

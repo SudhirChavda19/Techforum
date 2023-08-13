@@ -9,9 +9,9 @@ answerRoutes.post("/answer", validator.postAnswerValidation(), validator.validat
 answerRoutes.get("/answer/:questionId", validator.getAnswerByIdValidation(), validator.validate, answerController.getAnswerByquestionId);
 answerRoutes.patch("/answer/:id", validator.updateAnswerValidation(), validator.validate, auth.auth, answerController.editAnswer);
 answerRoutes.delete("/answer/:id", validator.deleteAnswerValidation(), validator.validate, auth.auth, answerController.deleteAnswer);
-answerRoutes.post("/upvote/:id", auth.auth, answerController.Upvote);
-answerRoutes.post("/downvote/:id", auth.auth, answerController.Downvote);
-answerRoutes.get("/upvote/:id", auth.auth, answerController.checkup);
-answerRoutes.get("/downvote/:id", auth.auth, answerController.checkdown);
+answerRoutes.post("/upvote/:id", validator.upvoteValidation(), validator.validate, auth.auth, answerController.Upvote);
+answerRoutes.post("/downvote/:id", validator.downvoteValidation(), validator.validate, auth.auth, answerController.Downvote);
+// answerRoutes.get("/upvote/:id", auth.auth, answerController.checkup);
+// answerRoutes.get("/downvote/:id", auth.auth, answerController.checkdown);
 
 module.exports = answerRoutes;

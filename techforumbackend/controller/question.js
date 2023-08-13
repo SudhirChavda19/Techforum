@@ -112,6 +112,12 @@ exports.createQuestion = async (req, res) => {
     }
 };
 
+/**
+     * This function send data to the user in form of pagination
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // question pagination
 exports.questionPagination = async (req, res) => {
     try {
@@ -161,6 +167,12 @@ exports.questionPagination = async (req, res) => {
     }
 };
 
+/**
+     * This function send all question to the user
+     * @param {Object} req req contain data that comes from user
+     * @param {Object} res res send response to user
+     * @returns {Object} server will return response in json object
+     */
 // read the questions from database
 exports.readQuestions = async (req, res) => {
     try {
@@ -187,6 +199,13 @@ exports.readQuestions = async (req, res) => {
         });
     }
 };
+
+/**
+     * This function get one question id and send response to user
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // get a speific question by question id
 exports.readByIdQuestion = async (req, res) => {
     try {
@@ -224,6 +243,12 @@ exports.readByIdQuestion = async (req, res) => {
     }
 };
 
+/**
+     * This function get one user id and send responce of that user post question
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // get a speific question by user id
 exports.readByIdUser = async (req, res) => {
     try {
@@ -267,6 +292,13 @@ exports.readByIdUser = async (req, res) => {
     }
 };
 
+/**
+     * This function get one question id from params and
+     *  update that question send responce as that question
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // update perticular question
 exports.updateQuestion = async (req, res) => {
     try {
@@ -323,6 +355,12 @@ exports.updateQuestion = async (req, res) => {
     }
 };
 
+/**
+     * This function get one question id from params and delete that question
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // delete perticular question
 exports.deleteQuestion = async (req, res) => {
     try {
