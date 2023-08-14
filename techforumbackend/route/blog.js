@@ -11,7 +11,7 @@ blogRoutes.get("/blog/:id", validator.getBlogByIdValidation(), validator.validat
 
 blogRoutes.get("/blogbyuser/:userId", validator.getBlogByUserIdValidation(), validator.validate, auth.auth, blogController.getBlog);
 
-blogRoutes.get("/blogtitle", validator.getBlogTitleValidation(), validator.validate, blogController.getBlogTitle);
+blogRoutes.get("/blogtitle", blogController.getBlogTitle);
 
 blogRoutes.post("/blog", validator.postBlogValidation(), validator.validate, auth.auth, blogController.createBlog);
 

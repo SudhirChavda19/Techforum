@@ -65,45 +65,46 @@ exports.getAnswerByquestionId = async (req, res) => {
 // edits the given specific answer
 exports.editAnswer = async (req, res) => {
     try {
-        if (req.params === undefined) {
-            return res.status(404).json({
-                status: 404,
-                message: "Enter the answer id",
-            });
-        }
-        let { id } = req.params;
-        id = id.trim();
-        if (id.length !== 24) {
-            return res.status(400).json({
-                status: 400,
-                message: "Invalid answer id",
-            });
-        }
+        // if (req.params === undefined) {
+        //     return res.status(404).json({
+        //         status: 404,
+        //         message: "Enter the answer id",
+        //     });
+        // }
+        // let { id } = req.params;
+        // id = id.trim();
+        // if (id.length !== 24) {
+        //     return res.status(400).json({
+        //         status: 400,
+        //         message: "Invalid answer id",
+        //     });
+        // }
 
-        if (Object.keys(req.body).length === 0) {
-            return res.status(404).json({
-                status: 404,
-                message: "Data not Found",
-            });
-        }
-        let { answer } = req.body;
-        if (answer === undefined) {
-            return res
-                .status(400)
-                .json({
-                    status: 400,
-                    message: "Answer not found",
-                });
-        }
-        answer = answer.trim();
-        if (answer.length === 0) {
-            return res
-                .status(400)
-                .json({
-                    status: 400,
-                    message: "Answer can't be empty",
-                });
-        }
+        // if (Object.keys(req.body).length === 0) {
+        //     return res.status(404).json({
+        //         status: 404,
+        //         message: "Data not Found",
+        //     });
+        // }
+        // let { answer } = req.body;
+        // if (answer === undefined) {
+        //     return res
+        //         .status(400)
+        //         .json({
+        //             status: 400,
+        //             message: "Answer not found",
+        //         });
+        // }
+        // answer = answer.trim();
+        // if (answer.length === 0) {
+        //     return res
+        //         .status(400)
+        //         .json({
+        //             status: 400,
+        //             message: "Answer can't be empty",
+        //         });
+        // }
+        const id = req.params;
         const editanswer = await Answer.findByIdAndUpdate(id, req.body, {
             new: true,
         });
@@ -128,20 +129,20 @@ exports.editAnswer = async (req, res) => {
 // deletes the given specific answer
 exports.deleteAnswer = async (req, res) => {
     try {
-        if (req.params === undefined) {
-            return res.status(402).json({
-                status: 402,
-                message: "Enter the answer Id",
-            });
-        }
-        let { id } = req.params;
-        id = id.trim();
-        if (id.length !== 24) {
-            return res.status(400).json({
-                status: 400,
-                message: "Invalid answer id",
-            });
-        }
+        // if (req.params === undefined) {
+        //     return res.status(402).json({
+        //         status: 402,
+        //         message: "Enter the answer Id",
+        //     });
+        // }
+        const { id } = req.params;
+        // id = id.trim();
+        // if (id.length !== 24) {
+        //     return res.status(400).json({
+        //         status: 400,
+        //         message: "Invalid answer id",
+        //     });
+        // }
         const deleteanswer = await Answer.findByIdAndDelete({ _id: id });
         if (!deleteanswer) {
             return res.status(404).json({
@@ -164,50 +165,50 @@ exports.deleteAnswer = async (req, res) => {
 // post upvotes
 
 exports.Upvote = async (req, res) => {
-    if (req.params === undefined) {
-        return res.status(404).json({
-            status: 404,
-            message: "Enter the answer id in params",
-        });
-    }
-    let answerId = req.params.id;
-    answerId = answerId.trim();
-    if (answerId.length !== 24) {
-        return res.status(400).json({
-            status: 400,
-            message: "Invalid answer id in params",
-        });
-    }
-    if (Object.keys(req.body).length === 0) {
-        return res.status(404).json({
-            status: 404,
-            message: "Data not Found",
-        });
-    }
-    let userId = req.body.upvotes;
-    if (userId === undefined) {
-        return res
-            .status(400)
-            .json({
-                status: 400,
-                message: "Upvotes not found",
-            });
-    }
-    userId = userId.trim();
-    if (userId.length === 0) {
-        return res
-            .status(400)
-            .json({
-                status: 400,
-                message: "Upvotes can't be empty",
-            });
-    }
-    if (userId.length !== 24) {
-        return res.status(400).json({
-            status: 400,
-            message: "Enter Invalid upvotes user id",
-        });
-    }
+    // if (req.params === undefined) {
+    //     return res.status(404).json({
+    //         status: 404,
+    //         message: "Enter the answer id in params",
+    //     });
+    // }
+    const answerId = req.params.id;
+    // answerId = answerId.trim();
+    // if (answerId.length !== 24) {
+    //     return res.status(400).json({
+    //         status: 400,
+    //         message: "Invalid answer id in params",
+    //     });
+    // }
+    // if (Object.keys(req.body).length === 0) {
+    //     return res.status(404).json({
+    //         status: 404,
+    //         message: "Data not Found",
+    //     });
+    // }
+    const userId = req.body.upvotes;
+    // if (userId === undefined) {
+    //     return res
+    //         .status(400)
+    //         .json({
+    //             status: 400,
+    //             message: "Upvotes not found",
+    //         });
+    // }
+    // userId = userId.trim();
+    // if (userId.length === 0) {
+    //     return res
+    //         .status(400)
+    //         .json({
+    //             status: 400,
+    //             message: "Upvotes can't be empty",
+    //         });
+    // }
+    // if (userId.length !== 24) {
+    //     return res.status(400).json({
+    //         status: 400,
+    //         message: "Enter Invalid upvotes user id",
+    //     });
+    // }
 
     const vote = await Answer.findOne({ _id: answerId });
     if (vote.upvotes.includes(userId)) {
@@ -231,44 +232,44 @@ exports.Upvote = async (req, res) => {
 // post downvotes
 
 exports.Downvote = async (req, res) => {
-    if (req.params === undefined) {
-        return res.status(404).json({
-            status: 404,
-            message: "Enter the answer id in params",
-        });
-    }
-    let answerId = req.params.id;
-    answerId = answerId.trim();
-    if (answerId.length !== 24) {
-        return res.status(400).json({
-            status: 400,
-            message: "Invalid answer id",
-        });
-    }
-    let userId = req.body.downvotes;
-    if (userId === undefined) {
-        return res
-            .status(400)
-            .json({
-                status: 400,
-                message: "Downvotes not found",
-            });
-    }
-    userId = userId.trim();
-    if (userId.length === 0) {
-        return res
-            .status(400)
-            .json({
-                status: 400,
-                message: "Downvotes can't be empty",
-            });
-    }
-    if (userId.length !== 24) {
-        return res.status(400).json({
-            status: 400,
-            message: "Enter Invalid downvotes user id",
-        });
-    }
+    // if (req.params === undefined) {
+    //     return res.status(404).json({
+    //         status: 404,
+    //         message: "Enter the answer id in params",
+    //     });
+    // }
+    const answerId = req.params.id;
+    // answerId = answerId.trim();
+    // if (answerId.length !== 24) {
+    //     return res.status(400).json({
+    //         status: 400,
+    //         message: "Invalid answer id",
+    //     });
+    // }
+    const userId = req.body.downvotes;
+    // if (userId === undefined) {
+    //     return res
+    //         .status(400)
+    //         .json({
+    //             status: 400,
+    //             message: "Downvotes not found",
+    //         });
+    // }
+    // userId = userId.trim();
+    // if (userId.length === 0) {
+    //     return res
+    //         .status(400)
+    //         .json({
+    //             status: 400,
+    //             message: "Downvotes can't be empty",
+    //         });
+    // }
+    // if (userId.length !== 24) {
+    //     return res.status(400).json({
+    //         status: 400,
+    //         message: "Enter Invalid downvotes user id",
+    //     });
+    // }
 
     const vote = await Answer.findOne({ _id: answerId });
     if (vote.downvotes.includes(userId)) {

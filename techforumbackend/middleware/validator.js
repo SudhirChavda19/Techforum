@@ -3,21 +3,26 @@ const {
 } = require("express-validator");
 
 const postAnswerValidation = () => [
+    body().custom((value, { req }) => Object.keys(req.body).length !== 0).withMessage("Data Not found"),
+    check("userId").exists().withMessage("userId can't be null"),
     body("userId").notEmpty().withMessage("userId can't be empty").trim()
         .isLength({ min: 24 })
         .withMessage("Invalid userId")
         .isLength({ max: 24 })
         .withMessage("Invalid userId"),
+    check("questionId").exists().withMessage("questionId can't be null"),
     body("questionId").notEmpty().withMessage("questionId can't be empty").trim()
         .isLength({ min: 24 })
         .withMessage("Invalid questionId")
         .isLength({ max: 24 })
         .withMessage("Invalid questionId"),
+    check("answer").exists().withMessage("answer can't be null"),
     body("answer").notEmpty().withMessage("answer can't be empty").trim(),
 ];
 
 const getAnswerByIdValidation = () => [
-    param("questionId").notEmpty().withMessage("enter questionId in params").trim()
+    // param().custom((value, { req }) => req.params === undefined).withMessage("enter questionId in params"),
+    param("questionId").trim()
         .isLength({ min: 24 })
         .withMessage("Invalid questionId in param")
         .isLength({ max: 24 })
@@ -29,6 +34,8 @@ const updateAnswerValidation = () => [
         .withMessage("Invalid answerId in param")
         .isLength({ max: 24 })
         .withMessage("Invalid answerId in param"),
+    body().custom((value, { req }) => Object.keys(req.body).length !== 0).withMessage("Data Not found"),
+    check("answer").exists().withMessage("answer can't be null"),
     body("answer").notEmpty().withMessage("answer can't be empty").trim(),
 ];
 const deleteAnswerValidation = () => [
@@ -44,11 +51,13 @@ const upvoteValidation = () => [
         .withMessage("Invalid answerId in param")
         .isLength({ max: 24 })
         .withMessage("Invalid answerId in param"),
-    body("upvotes").notEmpty().withMessage("userId can't be empty").trim()
+    body().custom((value, { req }) => Object.keys(req.body).length !== 0).withMessage("Data Not found"),
+    check("upvotes").exists().withMessage("upvotes can't be null"),
+    body("upvotes").notEmpty().withMessage("upvotes can't be empty").trim()
         .isLength({ min: 24 })
-        .withMessage("Invalid userId")
+        .withMessage("Invalid userId in upvotes")
         .isLength({ max: 24 })
-        .withMessage("Invalid userId"),
+        .withMessage("Invalid userId in upvotes"),
 ];
 const downvoteValidation = () => [
     param("id").notEmpty().withMessage("enter answerId in params").trim()
@@ -56,11 +65,13 @@ const downvoteValidation = () => [
         .withMessage("Invalid answerId in param")
         .isLength({ max: 24 })
         .withMessage("Invalid answerId in param"),
-    body("downvotes").notEmpty().withMessage("userId can't be empty").trim()
+    body().custom((value, { req }) => Object.keys(req.body).length !== 0).withMessage("Data Not found"),
+    check("downvotes").exists().withMessage("downvotes can't be null"),
+    body("downvotes").notEmpty().withMessage("downvotes can't be empty").trim()
         .isLength({ min: 24 })
-        .withMessage("Invalid userId")
+        .withMessage("Invalid userId in downvotes")
         .isLength({ max: 24 })
-        .withMessage("Invalid userId"),
+        .withMessage("Invalid userId in downvotes"),
 ];
 
 const getBlogValidation = () => [
@@ -73,88 +84,73 @@ const getBlogByIdValidation = () => [
         .withMessage("Invalid answerId in param")
         .isLength({ max: 24 })
         .withMessage("Invalid answerId in param"),
-    body("downvotes").notEmpty().withMessage("userId can't be empty").trim()
-        .isLength({ min: 24 })
-        .withMessage("Invalid userId")
-        .isLength({ max: 24 })
-        .withMessage("Invalid userId"),
 ];
 const getBlogByUserIdValidation = () => [
-    param("id").notEmpty().withMessage("enter answerId in params").trim()
+    param("userId").notEmpty().withMessage("enter answerId in params").trim()
         .isLength({ min: 24 })
         .withMessage("Invalid answerId in param")
         .isLength({ max: 24 })
         .withMessage("Invalid answerId in param"),
-    body("downvotes").notEmpty().withMessage("userId can't be empty").trim()
-        .isLength({ min: 24 })
-        .withMessage("Invalid userId")
-        .isLength({ max: 24 })
-        .withMessage("Invalid userId"),
 ];
-const getBlogTitleValidation = () => [
-    param("id").notEmpty().withMessage("enter answerId in params").trim()
-        .isLength({ min: 24 })
-        .withMessage("Invalid answerId in param")
-        .isLength({ max: 24 })
-        .withMessage("Invalid answerId in param"),
-    body("downvotes").notEmpty().withMessage("userId can't be empty").trim()
-        .isLength({ min: 24 })
-        .withMessage("Invalid userId")
-        .isLength({ max: 24 })
-        .withMessage("Invalid userId"),
-];
+// const getBlogTitleValidation = () => [
+//     body().custom((value, { req }) => Object.keys(req.body).length !== 0).withMessage("Data Not found"),
+//     check("upvotes").exists().withMessage("upvotes can't be null"),
+//     body("downvotes").notEmpty().withMessage("userId can't be empty").trim()
+//         .isLength({ min: 24 })
+//         .withMessage("Invalid userId")
+//         .isLength({ max: 24 })
+//         .withMessage("Invalid userId"),
+// ];
 const postBlogValidation = () => [
-    param("id").notEmpty().withMessage("enter answerId in params").trim()
-        .isLength({ min: 24 })
-        .withMessage("Invalid answerId in param")
-        .isLength({ max: 24 })
-        .withMessage("Invalid answerId in param"),
-    body("downvotes").notEmpty().withMessage("userId can't be empty").trim()
+    body().custom((value, { req }) => Object.keys(req.body).length !== 0).withMessage("Data Not found"),
+    check("userId").exists().withMessage("userId can't be null"),
+    body("userId").notEmpty().withMessage("userId can't be empty").trim()
         .isLength({ min: 24 })
         .withMessage("Invalid userId")
         .isLength({ max: 24 })
         .withMessage("Invalid userId"),
+    check("title").exists().withMessage("title can't be null"),
+    body("title").notEmpty().withMessage("title can't be empty").trim(),
+    check("content").exists().withMessage("content can't be null"),
+    body("content").notEmpty().withMessage("content can't be empty").trim(),
 ];
 const deleteBlogValidation = () => [
-    param("id").notEmpty().withMessage("enter answerId in params").trim()
+    param("id").notEmpty().withMessage("enter blogId in params").trim()
         .isLength({ min: 24 })
-        .withMessage("Invalid answerId in param")
+        .withMessage("Invalid blogId in param")
         .isLength({ max: 24 })
-        .withMessage("Invalid answerId in param"),
-    body("downvotes").notEmpty().withMessage("userId can't be empty").trim()
-        .isLength({ min: 24 })
-        .withMessage("Invalid userId")
-        .isLength({ max: 24 })
-        .withMessage("Invalid userId"),
+        .withMessage("Invalid blogId in param"),
 ];
 const updateBlogValidation = () => [
-    param("id").notEmpty().withMessage("enter answerId in params").trim()
+    param("id").notEmpty().withMessage("enter blogId in params").trim()
         .isLength({ min: 24 })
-        .withMessage("Invalid answerId in param")
+        .withMessage("Invalid blogId in param")
         .isLength({ max: 24 })
-        .withMessage("Invalid answerId in param"),
-    body("downvotes").notEmpty().withMessage("userId can't be empty").trim()
-        .isLength({ min: 24 })
-        .withMessage("Invalid userId")
-        .isLength({ max: 24 })
-        .withMessage("Invalid userId"),
+        .withMessage("Invalid blogId in param"),
 ];
 
 const signUpValidation = () => [
-    // body.notEmpty()
-    body("firstName").notEmpty().withMessage("firstname can't be empty").trim()
+    body().custom((value, { req }) => Object.keys(req.body).length !== 0).withMessage("Data Not found"),
+    check("firstName").exists().withMessage("firstname can't be null"),
+    body("firstName")
+        .trim().notEmpty()
+        .withMessage("firstname can't be empty")
         .matches(/^[a-zA-Z]+$/)
         .withMessage("Invalid firstname, firstname must be string and white space not allow"),
+    check("lastName").exists().withMessage("lastName can't be null"),
     body("lastName").notEmpty().withMessage("lastName can't be empty").trim()
         .matches(/^[a-zA-Z]+$/)
         .withMessage("Invalid lastName, lastName must be string and white space not allow"),
+    check("emailId").exists().withMessage("emailId can't be null"),
     body("emailId").notEmpty().withMessage("emailid can't be empty").trim()
         .isEmail()
         .withMessage("enter valid emailid"),
+    check("password").exists().withMessage("password can't be null"),
     body("password").notEmpty().withMessage("password can't be empty").trim()
         .matches(/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])[A-Za-z0-9!@#$%^&*]{6,}$/)
         .withMessage("Invalid password,password must have atleast one uppercase, one number,one special character and minimum 6 length"),
-    body("confirmPassword").notEmpty().withMessage("password can't be empty").trim(),
+    check("confirmPassword").exists().withMessage("confirmPassword can't be null"),
+    body("confirmPassword").notEmpty().withMessage("confirmPassword can't be empty").trim(),
     check("confirmPassword").custom((value, { req }) => value === req.body.password).withMessage("Password not matched"),
 ];
 
@@ -183,15 +179,15 @@ const questionValidate = () => [
 
 const validate = (req, res, next) => {
     const errors = validationResult(req);
-    // console.log("Error")
     if (errors.isEmpty()) {
         return next();
     }
     // const extractedErrors = [];
-    // errors.array().map((err) => extractedErrors.push({ [err.path]: err.msg }));
+    errors.array().filter((err) => err);
+    console.log("-------", errors.errors);
     return res.status(400).json({
         status: "Failed",
-        error: errors.msg,
+        error: errors.errors[0].msg,
     });
 };
 
@@ -205,7 +201,6 @@ module.exports = {
     getBlogValidation,
     getBlogByIdValidation,
     getBlogByUserIdValidation,
-    getBlogTitleValidation,
     postBlogValidation,
     deleteBlogValidation,
     updateBlogValidation,

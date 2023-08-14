@@ -5,7 +5,8 @@ exports.auth = async (req, res, next) => {
     // const check = req.headers.cookie;
     // console.log(typeof check);
     // const token = check.slice(4, check.length);
-    const token = req.headers.cookie;
+    let token = req.headers.cookie;
+    token = token.slice(4, token.length);
     if (!token) {
         return res.status(401).json({
             status: 401,
