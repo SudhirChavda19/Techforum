@@ -6,7 +6,6 @@ exports.auth = async (req, res, next) => {
     // console.log(typeof check);
     // const token = check.slice(4, check.length);
     let token = req.headers.cookie;
-    token = token.slice(4, token.length);
     if (!token) {
         return res.status(401).json({
             status: 401,
@@ -14,6 +13,7 @@ exports.auth = async (req, res, next) => {
         });
     }
     try {
+        token = token.slice(4, token.length);
         const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
         req.userId = decode.userId;
     } catch (err) {

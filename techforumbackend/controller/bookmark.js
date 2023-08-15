@@ -11,8 +11,8 @@ module.exports = {
                         message: "Data not Found, Payload Not Acceptable",
                     });
             }
-            let userId = await req.body.userId;
             let { questionId } = req.body;
+            let { userId } = req.body;
             if (userId === undefined) {
                 return res
                     .status(406)

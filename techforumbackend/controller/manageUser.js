@@ -43,16 +43,22 @@ module.exports = {
                     message: "UserId not found",
                 });
             }
-            await User.deleteOne({ _id: userId });
+            const user = await User.deleteOne({ _id: userId });
             await Bookmark.deleteMany({ userId });
             await Answer.deleteMany({ userId });
             await Question.deleteMany({ userId });
             await Blog.deleteMany({ userId });
             await Doc.deleteMany({ userId });
 
+            if (!user) {
+                return res.status(201).json({
+                    status: 201,
+                    message: "User Already Deleted",
+                });
+            }
             return res.status(201).json({
                 status: 201,
-                message: "User deleted successfully!",
+                message: "User deleted successfully",
             });
         } catch (err) {
             return res.status(500).json({

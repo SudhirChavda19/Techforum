@@ -14,8 +14,9 @@ const blogRoutes = require("./route/blog");
 const documentRoutes = require("./route/doc");
 const answerRoutes = require("./route/answer");
 const manageUsersRoutes = require("./route/manageuser");
-const tagsRoutes = require("./route/Managetag");
+const tagsRoutes = require("./route/manageTag");
 const manageResourcesRoutes = require("./route/manageResource");
+const logger = require("./logs/logger");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -25,8 +26,11 @@ const connectToDatabase = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
+        logger.log("info", "conneted to database");
         console.log("Connected to database");
     } catch (err) {
+        logger.log("error", "err");
+
         console.log(`Error connecting to database${err}`);
     }
 };

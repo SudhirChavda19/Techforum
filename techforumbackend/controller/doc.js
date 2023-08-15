@@ -63,7 +63,7 @@ exports.postDocument = async (req, res) => {
         });
     }
     try {
-        const userId = req.body.user;
+        const { userId } = req.body;
         const fileName = req.file.originalname;
         const fileType = req.file.mimetype;
         const docData = req.file.buffer;
@@ -96,7 +96,6 @@ exports.deleteDocument = async (req, res) => {
             return res.status(404).json({
                 status: 404,
                 message: "Already deleted!",
-                detail: "Document has already been deleted.",
             });
         }
         return res.status(201).json({

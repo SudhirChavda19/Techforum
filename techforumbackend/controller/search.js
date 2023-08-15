@@ -3,7 +3,7 @@ const Question = require("../model/question");
 // search question
 exports.searchQuestion = async (req, res) => {
     try {
-        const question = req.query.tags;
+        const { question } = req.query;
         const searchedData = await Question.aggregate([
             {
                 $search: {

@@ -9,7 +9,7 @@ blogRoutes.get("/blog", validator.getBlogValidation(), validator.validate, auth.
 
 blogRoutes.get("/blog/:id", validator.getBlogByIdValidation(), validator.validate, auth.auth, blogController.blog);
 
-blogRoutes.get("/blogbyuser/:userId", validator.getBlogByUserIdValidation(), validator.validate, auth.auth, blogController.getBlog);
+blogRoutes.get("/blogbyuser/:userId", validator.getByUserIdValidation(), validator.validate, auth.auth, blogController.getBlog);
 
 blogRoutes.get("/blogtitle", blogController.getBlogTitle);
 
