@@ -14,9 +14,9 @@ const blogRoutes = require("./route/blog");
 const documentRoutes = require("./route/doc");
 const answerRoutes = require("./route/answer");
 const manageUsersRoutes = require("./route/manageuser");
-const tagsRoutes = require("./route/manageTag");
+const tagsRoutes = require("./route/Managetag");
 const manageResourcesRoutes = require("./route/manageResource");
-const logger = require("./logs/logger");
+const logger = require("./log/logger");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

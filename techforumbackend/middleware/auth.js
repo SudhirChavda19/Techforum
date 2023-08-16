@@ -1,6 +1,13 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+/**
+     * This function check cookie from header and check if user is authenticated or not
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @param {Object} next executes the next middleware in the middleware stack
+     * @returns {Object} server will return response in json object
+     */
 exports.auth = async (req, res, next) => {
     // const check = req.headers.cookie;
     // console.log(typeof check);

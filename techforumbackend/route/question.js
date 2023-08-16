@@ -9,7 +9,7 @@ questionRouter.post("/question", validator.postQuestionValidation(), validator.v
 
 questionRouter.get("/question", questionController.readQuestions);
 
-questionRouter.get("/quepagination", validator.quePaginationValidation(), validator.validate, questionController.questionPagination);
+questionRouter.get("/quepagination", validator.getByPaginationValidation(), validator.validate, questionController.questionPagination);
 
 questionRouter.get("/question/:id", validator.getQuestionByIdValidation(), validator.validate, questionController.readByIdQuestion);
 

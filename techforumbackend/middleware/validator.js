@@ -21,7 +21,8 @@ const postAnswerValidation = () => [
 ];
 
 const getAnswerByIdValidation = () => [
-    // param().custom((value, { req }) => req.params === undefined).withMessage("enter questionId in params"),
+    // param().custom((value, { req }) => req.params === undefined)
+    // .withMessage("enter questionId in params"),
     param("questionId").trim()
         .isLength({ min: 24 })
         .withMessage("Invalid questionId in param")
@@ -74,10 +75,6 @@ const downvoteValidation = () => [
         .withMessage("Invalid userId in downvotes"),
 ];
 
-const getBlogValidation = () => [
-    query("pageNumber").notEmpty().withMessage("enter pageNumber in query").trim(),
-    query("pageSize").notEmpty().withMessage("enter pageSize in query").trim(),
-];
 const getBlogByIdValidation = () => [
     param("id").notEmpty().withMessage("enter answerId in params").trim()
         .isLength({ min: 24 })
@@ -123,12 +120,17 @@ const postQuestionValidation = () => [
         .withMessage("Invalid userId"),
     check("question").exists().withMessage("question can't be null"),
     body("question").trim().notEmpty().withMessage("question can't be empty"),
-    // body("questionDescribe").custom((value, { req }) => req.body.questionDescribe !== undefined).trim()
+    // body("questionDescribe")
+    // .custom((value, { req }) => req.body.questionDescribe !== undefined).trim()
     //     .withMessage("questionDescribe can't be empty"),
 ];
-const quePaginationValidation = () => [
-    query("page").notEmpty().withMessage("enter page in query").trim(),
-    query("limit").notEmpty().withMessage("enter limit in query").trim(),
+// const quePaginationValidation = () => [
+//     query("pageNumber").notEmpty().withMessage("enter page in query").trim(),
+//     query("pageSize").notEmpty().withMessage("enter limit in query").trim(),
+// ];
+const getByPaginationValidation = () => [
+    query("pageNumber").notEmpty().withMessage("enter pageNumber in query").trim(),
+    query("pageSize").notEmpty().withMessage("enter pageSize in query").trim(),
 ];
 const getQuestionByIdValidation = () => [
     param("id").notEmpty().withMessage("enter questionId in params").trim()
@@ -247,10 +249,12 @@ const signUpValidation = () => [
 const signInValidation = () => [
     body().custom((value, { req }) => Object.keys(req.body).length !== 0).withMessage("Data Not found"),
     check("emailId").exists().withMessage("emailId can't be null"),
-    body("emailId").trim().notEmpty().withMessage("emailId can't be empty").isEmail()
+    body("emailId").trim().notEmpty().withMessage("emailId can't be empty")
+        .isEmail()
         .withMessage("enter valid email address"),
     check("password").exists().withMessage("password can't be null"),
-    body("password").notEmpty().withMessage("password can't be empty").isLength({ min: 6 }).withMessage("password must be atleast 6 character long"),
+    body("password").notEmpty().withMessage("password can't be empty").isLength({ min: 6 })
+        .withMessage("password must be atleast 6 character long"),
 ];
 
 const searchValidation = () => [
@@ -278,6 +282,21 @@ const deleteTagValidation = () => [
         .withMessage("Invalid tagId in param"),
 ];
 
+const approveResourceValidation = () => [
+    param("id").notEmpty().withMessage("enter blogId in params").trim()
+        .isLength({ min: 24 })
+        .withMessage("Invalid blogId in param")
+        .isLength({ max: 24 })
+        .withMessage("Invalid blogId in param"),
+    body().custom((value, { req }) => Object.keys(req.body).length !== 0).withMessage("Data Not found"),
+    check("isApproved").exists().withMessage("isApproved can't be null"),
+    body("isApproved")
+        .trim().notEmpty()
+        .withMessage("isApproved can't be empty")
+        .isBoolean()
+        .withMessage("Invalid data, enter only boolean value 'true'"),
+];
+
 const validate = (req, res, next) => {
     const errors = validationResult(req);
     if (errors.isEmpty()) {
@@ -298,13 +317,11 @@ module.exports = {
     deleteAnswerValidation,
     upvoteValidation,
     downvoteValidation,
-    getBlogValidation,
     getBlogByIdValidation,
     postBlogValidation,
     deleteBlogValidation,
     updateBlogValidation,
     postQuestionValidation,
-    quePaginationValidation,
     getQuestionByIdValidation,
     updateQuestionValidation,
     deleteQuestionValidation,
@@ -316,10 +333,12 @@ module.exports = {
     resetPasswordValidation,
     getByUserIdValidation,
     signUpValidation,
+    getByPaginationValidation,
     validate,
     signInValidation,
     searchValidation,
     deleteUserValidation,
     addTagValidation,
     deleteTagValidation,
+    approveResourceValidation,
 };
