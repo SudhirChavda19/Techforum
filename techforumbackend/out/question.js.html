@@ -38,55 +38,16 @@ const Answer = require("../model/answer");
      */
 // post a question
 exports.createQuestion = async (req, res) => {
-    if (Object.keys(req.body).length === 0) {
-        return res.status(404).json({
-            status: 404,
-            message: "Data not Found",
-        });
-    }
-    let { userId } = req.body;
-    let { question } = req.body;
+    const { userId } = req.body;
+    const { question } = req.body;
     const { questionDescribe } = req.body;
     const { tags } = req.body;
     const createdAt = Date.now();
 
-    if (userId === undefined) {
-        return res.status(400).json({
-            status: 400,
-            message: "UserId not found",
-        });
-    }
-    userId = userId.trim();
-    if (userId.length === 0) {
-        return res.status(400).json({
-            status: 400,
-            message: "UserId can't be empty",
-        });
-    }
-    if (userId.length !== 24) {
-        return res.status(400).json({
-            status: 400,
-            message: "Enter Invalid user id",
-        });
-    }
-    if (question === undefined) {
-        return res.status(400).json({
-            status: 400,
-            message: "Question not found",
-        });
-    }
-    question = question.trim();
-    if (question.length === 0) {
-        return res.status(400).json({
-            status: 400,
-            message: "Question can't be empty",
-        });
-    }
-
     if (questionDescribe !== undefined) {
         if (questionDescribe.length === 0) {
             return res.status(400).json({
-                status: 400,
+                status: "Fail",
                 message: "Question Describe can't be empty",
             });
         }
@@ -94,7 +55,7 @@ exports.createQuestion = async (req, res) => {
     if (tags !== undefined) {
         if (tags.length === 0) {
             return res.status(400).json({
-                status: 400,
+                status: "Fail",
                 message: "Tags can't be empty",
             });
         }
@@ -102,7 +63,7 @@ exports.createQuestion = async (req, res) => {
             return res
                 .status(400)
                 .json({
-                    status: 400,
+                    status: "Fail",
                     message: "tags must be in Array",
                 });
         }
@@ -112,7 +73,7 @@ exports.createQuestion = async (req, res) => {
     if (questionData !== null) {
         if (questionData.question === question) {
             return res.status(400).json({
-                status: 400,
+                status: "Fail",
                 message: "Question already exist",
             });
         }
@@ -127,24 +88,30 @@ exports.createQuestion = async (req, res) => {
         });
         await questionCreated.save();
         return res.status(201).json({
-            status: 201,
+            status: "Success",
             message: "Question created successfully",
             data: questionCreated,
         });
     } catch (err) {
         console.log(err);
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }
 };
 
+/**
+     * This function send data to the user in form of pagination
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // question pagination
 exports.questionPagination = async (req, res) => {
     try {
-        const page = parseInt(req.query.page, 10) || 1;
-        const limit = parseInt(req.query.limit, 10) || 8;
+        const page = parseInt(req.query.pageNumber, 10) || 1;
+        const limit = parseInt(req.query.pageSize, 10) || 8;
         const skip = (page - 1) * limit;
 
         const questionsData = await Question.find()
@@ -159,7 +126,7 @@ exports.questionPagination = async (req, res) => {
         const check = page * limit;
         if (check > count) {
             return res.status(404).json({
-                status: 404,
+                status: "Fail",
                 message: "please decrease the limit or page",
             });
         }
@@ -169,12 +136,12 @@ exports.questionPagination = async (req, res) => {
 
         if (!questionsData) {
             return res.status(404).json({
-                status: 404,
+                status: "Fail",
                 message: "Data Not Found",
             });
         }
         return res.status(200).json({
-            status: 200,
+            status: "Success",
             message: "Questions Readed successfully",
             data: questionsData,
             nbHits: questionsData.length,
@@ -183,12 +150,18 @@ exports.questionPagination = async (req, res) => {
         });
     } catch (err) {
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }
 };
 
+/**
+     * This function send all question to the user
+     * @param {Object} req req contain data that comes from user
+     * @param {Object} res res send response to user
+     * @returns {Object} server will return response in json object
+     */
 // read the questions from database
 exports.readQuestions = async (req, res) => {
     try {
@@ -199,33 +172,34 @@ exports.readQuestions = async (req, res) => {
         ]);
         if (!questionsData) {
             return res.status(404).json({
-                status: 404,
+                status: "Fail",
                 message: "Data Not Found",
             });
         }
         return res.status(200).json({
-            status: 200,
+            status: "Success",
             message: "Questions Readed successfully",
             data: questionsData,
         });
     } catch (err) {
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }
 };
+
+/**
+     * This function get one question id and send response to user
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // get a speific question by question id
 exports.readByIdQuestion = async (req, res) => {
     try {
         let { id } = req.params;
         id = id.trim();
-        if (id.length !== 24) {
-            return res.status(400).json({
-                status: 400,
-                message: "Invalid question id",
-            });
-        }
         const questionData = await Question.findById({ _id: id }).populate([
             {
                 path: "userId",
@@ -234,42 +208,34 @@ exports.readByIdQuestion = async (req, res) => {
 
         if (!questionData) {
             return res.status(404).json({
-                status: 404,
+                status: "Fail",
                 message: "Data Not Found, Please enter valid question id",
             });
         }
         return res.status(200).json({
-            status: 200,
+            status: "Success",
             message: "Question Readed successfully",
             data: questionData,
         });
     } catch (err) {
         console.log(err);
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }
 };
 
+/**
+     * This function get one user id and send responce of that user post question
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // get a speific question by user id
 exports.readByIdUser = async (req, res) => {
     try {
-        let { userId } = req.params;
-        if (userId === undefined) {
-            return res.status(400).json({
-                status: 400,
-                message: "Enter the user Id ",
-            });
-        }
-
-        userId = userId.trim();
-        if (userId.length !== 24) {
-            return res.status(400).json({
-                status: 400,
-                message: "Invalid user id",
-            });
-        }
+        const { userId } = req.params;
         const questionData = await Question.find({ userId }).populate([
             {
                 path: "userId",
@@ -278,49 +244,34 @@ exports.readByIdUser = async (req, res) => {
 
         if (!questionData) {
             return res.status(400).json({
-                status: 400,
+                status: "Fail",
                 message: "Data Not Found, Please enter valid user Id",
             });
         }
         return res.status(200).json({
-            status: 200,
+            status: "Success",
             message: "Question Readed successfully",
             data: questionData,
         });
     } catch (err) {
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }
 };
 
+/**
+     * This function get one question id from params and
+     *  update that question send responce as that question
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // update perticular question
 exports.updateQuestion = async (req, res) => {
     try {
-        if (req.params === undefined) {
-            return res.status(404).json({
-                status: 404,
-                message: "Enter the question id",
-            });
-        }
-
-        let { id } = req.params;
-        id = id.trim();
-        if (id.length !== 24) {
-            return res.status(400).json({
-                status: 400,
-                message: "Invalid question id",
-            });
-        }
-
-        if (Object.keys(req.body).length === 0) {
-            return res.status(404).json({
-                status: 404,
-                message: "Data not Found",
-            });
-        }
-
+        const { id } = req.params;
         const update = req.body;
         const updatedAt = Date.now();
         const updateQuestion = await Question.findByIdAndUpdate(
@@ -333,59 +284,50 @@ exports.updateQuestion = async (req, res) => {
 
         if (!updateQuestion) {
             return res.status(400).json({
-                status: 400,
+                status: "Fail",
                 message: "Data Not Found, Enter valid id",
             });
         }
 
         return res.status(200).json({
-            status: 200,
+            status: "Success",
             message: "Question Updated Successfully",
             data: updateQuestion,
         });
     } catch (err) {
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }
 };
 
+/**
+     * This function get one question id from params and delete that question
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // delete perticular question
 exports.deleteQuestion = async (req, res) => {
     try {
-        if (req.params === undefined) {
-            return res.status(402).json({
-                status: 402,
-                message: "Enter the question Id",
-            });
-        }
-
-        let { id } = req.params;
-        id = id.trim();
-        if (id.length !== 24) {
-            return res.status(400).json({
-                status: 400,
-                message: "Invalid question id",
-            });
-        }
-
+        const { id } = req.params;
         const deleteQuestion = await Question.findByIdAndDelete(id);
         if (!deleteQuestion) {
             return res.status(404).json({
-                status: 404,
+                status: "Fail",
                 message: "Data Not Found, Enter valid id",
             });
         }
         await Bookmark.deleteMany({ questionId: id });
         await Answer.deleteMany({ questionId: id });
         return res.status(200).json({
-            status: 200,
+            status: "Success",
             message: "Question Deleted Successfully",
         });
     } catch (err) {
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }
@@ -400,13 +342,13 @@ exports.deleteQuestion = async (req, res) => {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#createQuestion">createQuestion</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Downvote">Downvote</a></li><li><a href="global.html#Upvote">Upvote</a></li><li><a href="global.html#addAnswer">addAnswer</a></li><li><a href="global.html#blog">blog</a></li><li><a href="global.html#blogs">blogs</a></li><li><a href="global.html#createBlog">createBlog</a></li><li><a href="global.html#createQuestion">createQuestion</a></li><li><a href="global.html#deleteAnswer">deleteAnswer</a></li><li><a href="global.html#deleteBlog">deleteBlog</a></li><li><a href="global.html#deleteDocument">deleteDocument</a></li><li><a href="global.html#deleteQuestion">deleteQuestion</a></li><li><a href="global.html#editAnswer">editAnswer</a></li><li><a href="global.html#getAnswerByquestionId">getAnswerByquestionId</a></li><li><a href="global.html#getBlog">getBlog</a></li><li><a href="global.html#getBlogTitle">getBlogTitle</a></li><li><a href="global.html#getDocument">getDocument</a></li><li><a href="global.html#getDocuments">getDocuments</a></li><li><a href="global.html#postDocument">postDocument</a></li><li><a href="global.html#questionPagination">questionPagination</a></li><li><a href="global.html#readByIdQuestion">readByIdQuestion</a></li><li><a href="global.html#readByIdUser">readByIdUser</a></li><li><a href="global.html#readQuestions">readQuestions</a></li><li><a href="global.html#searchQuestion">searchQuestion</a></li><li><a href="global.html#updateBlog">updateBlog</a></li><li><a href="global.html#updateQuestion">updateQuestion</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Aug 11 2023 15:05:53 GMT+0530 (India Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Aug 17 2023 10:42:03 GMT+0530 (India Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
