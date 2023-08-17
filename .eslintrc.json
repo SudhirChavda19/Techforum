@@ -7,7 +7,7 @@
     "parserOptions": {
         "ecmaVersion": "latest"
     },
-    "ignorePatterns": ["./techforumbackend/out/script/prettify/prettify.js"],
+    "ignorePatterns": ["prettify.js", "lang-css.js", "linenumber.js"],
     "rules": {
         "no-underscore-dangle":"off",
         "no-useless-escape":"off",

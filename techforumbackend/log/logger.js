@@ -1,19 +1,19 @@
 const path = require("path");
 // const winston = require("winston");
-const { createLogger, format, transports } = require('winston');
-const { combine, timestamp, label, printf } = format;
+const { createLogger, format, transports } = require("winston");
 
-const myFormat = printf(({ level, message, timestamp }) => {
-    return `${level}: ${message} ${timestamp}`;
-  });
-  
+const {
+    combine, timestamp, printf,
+} = format;
+
+const myFormat = printf(({ level, message, timestamp }) => `${level}: ${message} ${timestamp}`);
 
 const logger = createLogger({
     level: "info",
     format: combine(
         timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-        myFormat
-      ),
+        myFormat,
+    ),
     defaultMeta: { service: "user-service" },
     transports: [
     //

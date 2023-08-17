@@ -36,7 +36,7 @@ exports.searchQuestion = async (req, res) => {
             message: "Qustion searched Successfully",
             data: searchedData,
         });
-    } catch (e) {
+    } catch (err) {
         logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",

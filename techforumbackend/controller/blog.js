@@ -60,7 +60,7 @@ exports.blogs = async (req, res) => {
             message: "Blog Fetched!",
             blogs,
         });
-    } catch (error) {
+    } catch (err) {
         logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",

@@ -19,7 +19,7 @@ module.exports = {
             });
 
             if (!updateblog) {
-                logger.log("error","Blog not found!");
+                logger.log("error", "Blog not found!");
                 return res.status(404).json({
                     status: "Fail",
                     message: "Blog not found!",
@@ -191,7 +191,7 @@ module.exports = {
                 message: "Document get Succesfully",
                 body: docs,
             });
-        } catch (error) {
+        } catch (err) {
             logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",

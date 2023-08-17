@@ -90,7 +90,7 @@ module.exports = {
             logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
-                message: `Server Error`,
+                message: "Server Error",
             });
         }
     },

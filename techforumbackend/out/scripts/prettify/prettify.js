@@ -1,4 +1,3 @@
-/* eslint-disable block-scoped-var */
 const q = null; window.PR_SHOULD_USE_CONTINUATION = !0;
 (function () {
     function L(a) {

@@ -22,7 +22,7 @@ exports.getDocument = async (req, res) => {
             message: "Succesfully got all Documents",
             data: docsdata,
         });
-    } catch (error) {
+    } catch (err) {
         logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
@@ -101,7 +101,7 @@ exports.postDocument = async (req, res) => {
             message: "Succesfully posted a Document",
             data: document,
         });
-    } catch (error) {
+    } catch (err) {
         logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
