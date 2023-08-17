@@ -4,6 +4,7 @@ const Answer = require("../model/answer");
 const Question = require("../model/question");
 const Blog = require("../model/blog");
 const Doc = require("../model/doc");
+const logger = require("../log/logger");
 
 module.exports = {
     /**
@@ -19,6 +20,7 @@ module.exports = {
             };
             const users = await User.find({}, projection).exec();
             if (!users) {
+                logger.log("error", "Users not found");
                 return res.status(404).json({
                     status: "Fail",
                     message: "Users not found",
@@ -31,12 +33,14 @@ module.exports = {
                 firstName: user.firstName,
                 lastName: user.lastName,
             }));
+            logger.log("info", "Users get Successfully");
             return res.status(201).json({
                 status: "Success",
                 message: "Users get Successfully",
                 users: usersData,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",
@@ -54,6 +58,7 @@ module.exports = {
         try {
             const userId = req.params.id;
             if (!userId) {
+                logger.log("error", "UserId not found");
                 return res.status(404).json({
                     status: "Fail",
                     message: "UserId not found",
@@ -67,16 +72,19 @@ module.exports = {
             await Doc.deleteMany({ userId });
 
             if (!user) {
-                return res.status(201).json({
-                    status: "Success",
+                logger.log("error", "User Already Deleted");
+                return res.status(400).json({
+                    status: "Fail",
                     message: "User Already Deleted",
                 });
             }
+            logger.log("info", "User deleted successfully");
             return res.status(201).json({
                 status: "Success",
                 message: "User deleted successfully",
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",

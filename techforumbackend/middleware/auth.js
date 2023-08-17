@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const logger = require("../log/logger");
 
 /**
      * This function check cookie from header and check if user is authenticated or not
@@ -14,8 +15,9 @@ exports.auth = async (req, res, next) => {
     // const token = check.slice(4, check.length);
     let token = req.headers.cookie;
     if (!token) {
+        logger.log("error", "Need to Sign In");
         return res.status(401).json({
-            status: 401,
+            status: "Fail",
             message: "Need to Sign In",
         });
     }
@@ -24,8 +26,9 @@ exports.auth = async (req, res, next) => {
         const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
         req.userId = decode.userId;
     } catch (err) {
+        logger.log("error", "You are not authorized");
         return res.status(401).json({
-            status: 401,
+            status: "Fail",
             message: "You are not authorized",
         });
     }

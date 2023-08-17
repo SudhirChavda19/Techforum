@@ -1,0 +1,85 @@
+{"level":"info","message":"conneted to database","service":"user-service"}
+{"level":"info","message":"conneted to database","service":"user-service"}
+{"level":"error","message":"Server Error: TypeError [ERR_INVALID_ARG_TYPE]: The \"salt\" argument must be of type string or an instance of ArrayBuffer, Buffer, TypedArray, or DataView. Received undefined","service":"user-service"}
+{"level":"info","message":"conneted to database","service":"user-service"}
+{"level":"info","message":"User created successfully","service":"user-service"}
+{"level":"error","message":"Incorrect Email or password","service":"user-service"}
+{"level":"info","message":"conneted to database","service":"user-service"}
+{"level":"info","message":"conneted to database","service":"user-service"}
+{"level":"error","message":"Incorrect Email or password","service":"user-service"}
+{"level":"error","message":"Incorrect Email or password","service":"user-service"}
+{"level":"error","message":"Incorrect Email or password","service":"user-service"}
+{"level":"info","message":"Signed in successfully","service":"user-service"}
+{"level":"info","message":"Question created successfully","service":"user-service"}
+{"level":"error","message":"Question already exist","service":"user-service"}
+{"level":"error","message":"Question already exist","service":"user-service"}
+{"level":"info","message":"Questions Readed successfully","service":"user-service"}
+{"level":"info","message":"Questions Readed successfully","service":"user-service"}
+{"level":"info","message":"Question Readed successfully","service":"user-service"}
+{"level":"error","message":"Server Error: CastError: Cast to ObjectId failed for value \"{ _id: '6457b6bcfec9fc26d25b9 67' }\" (type Object) at path \"_id\" for model \"question\"","service":"user-service"}
+{"level":"info","message":"Question Readed successfully","service":"user-service"}
+{"level":"error","message":"Data Not Found, Please enter valid question id","service":"user-service"}
+{"level":"info","message":"Question Readed successfully","service":"user-service"}
+{"level":"error","message":"Server Error: CastError: Cast to ObjectId failed for value \"{ _id: '6457b6bcfec9fc26d25 b967' }\" (type Object) at path \"_id\" for model \"question\"","service":"user-service"}
+{"level":"error","message":"Data Not Found, Enter valid id","service":"user-service"}
+{"level":"info","message":"Question Updated Successfully","service":"user-service"}
+{"level":"info","message":"Question Updated Successfully","service":"user-service"}
+{"level":"error","message":"Server Error: CastError: Cast to ObjectId failed for value \"6457b6bcfec9fc26d25b96 7\" (type string) at path \"_id\" for model \"question\"","service":"user-service"}
+{"level":"info","message":"Question Deleted Successfully","service":"user-service"}
+{"level":"error","message":"Data Not Found, Enter valid id","service":"user-service"}
+{"level":"info","message":"Question Readed successfully","service":"user-service"}
+{"level":"info","message":"Question Readed successfully","service":"user-service"}
+{"level":"info","message":"Qustion searched Successfully","service":"user-service"}
+{"level":"info","message":"Qustion searched Successfully","service":"user-service"}
+{"level":"info","message":"Qustion searched Successfully","service":"user-service"}
+{"level":"error","message":"Server Error: ValidationError: userId: Cast to ObjectId failed for value \"644f4ce08fdd11a14468b 8c\" (type string) at path \"userId\" because of \"BSONError\"","service":"user-service"}
+{"level":"info","message":"Answer Posted successfully","service":"user-service"}
+{"level":"info","message":"Answer get successfully","service":"user-service"}
+{"level":"error","message":"Server Error: CastError: Cast to ObjectId failed for value \"6454f8019f53ae39812f1 4e\" (type string) at path \"questionId\" for model \"answer\"","service":"user-service"}
+{"level":"info","message":"Answer get successfully","service":"user-service"}
+{"level":"info","message":"Answer get successfully","service":"user-service"}
+{"level":"info","message":"Answer get successfully","service":"user-service"}
+{"level":"error","message":"Server Error: CastError: Cast to ObjectId failed for value \"{ id: '64ddec5122f371eda52d0999' }\" (type Object) at path \"_id\" for model \"answer\"","service":"user-service"}
+info: conneted to database 2023-08-17T10:05:10.560Z
+error: Server Error: CastError: Cast to ObjectId failed for value "{ id: '64ddec5122f371eda52d0999' }" (type Object) at path "_id" for model "answer" 2023-08-17T10:05:27.238Z
+info: conneted to database 2023-08-17 15:38:00
+info: conneted to database 2023-08-17 15:40:07
+error: Server Error: CastError: Cast to ObjectId failed for value "{ id: '64ddec5122f371eda52d0999' }" (type Object) at path "_id" for model "answer" 2023-08-17 15:40:09
+error: Server Error: CastError: Cast to ObjectId failed for value "{ id: '64ddec5122f371eda52d0999' }" (type Object) at path "_id" for model "answer" 2023-08-17 15:42:15
+info: conneted to database 2023-08-17 15:45:18
+error: Server Error: CastError: Cast to ObjectId failed for value "{ id: '64ddec5122f371eda52d0999' }" (type Object) at path "_id" for model "answer" 2023-08-17 15:45:20
+info: conneted to database 2023-08-17 15:47:04
+info: Answer Updated successfully 2023-08-17 15:47:11
+info: Answer deleted successfully 2023-08-17 15:48:22
+error: Server Error: TypeError: Cannot read properties of null (reading 'upvotes') 2023-08-17 15:48:32
+info: Answer get successfully 2023-08-17 15:50:51
+info: Answer Posted successfully 2023-08-17 15:51:26
+info: Upvoted Successfully 2023-08-17 15:51:41
+info: Answer get successfully 2023-08-17 15:51:59
+info: Downvoted Successfully 2023-08-17 15:53:23
+info: Answer get successfully 2023-08-17 15:53:32
+info: conneted to database 2023-08-17 15:57:17
+info: Answer not found 2023-08-17 15:57:50
+info: Upvoted Successfully 2023-08-17 15:57:58
+info: Blog Fetched! 2023-08-17 16:00:18
+info: Blog Fetched! 2023-08-17 16:00:36
+error: Blog not found! 2023-08-17 16:01:58
+info: Succesfully got the Blog 2023-08-17 16:04:07
+info: Succesfully got the Blog 2023-08-17 16:04:20
+info: Blog get successfully 2023-08-17 16:04:32
+info: Blog Title get successfully 2023-08-17 16:05:11
+info: Blog get successfully 2023-08-17 16:05:32
+info: conneted to database 2023-08-17 16:24:45
+info: Succesfully got the Blog 2023-08-17 16:24:49
+info: Blog get successfully 2023-08-17 16:24:55
+error: Server Error: ValidationError: userId: Cast to ObjectId failed for value "644f4ce08fdd11a1446 8b8c" (type string) at path "userId" because of "BSONError" 2023-08-17 16:25:33
+info: Blog posted successfully 2023-08-17 16:27:16
+info: Succesfully updated a blog 2023-08-17 16:28:35
+info: Succesfully got the Blog 2023-08-17 16:29:33
+info: Succesfully deleted a blog 2023-08-17 16:29:46
+error: Already deleted! 2023-08-17 16:29:49
+info: Added bookmark 2023-08-17 16:31:59
+info: Bookmark get Successfully 2023-08-17 16:32:22
+info: Bookmark get Successfully 2023-08-17 16:32:37
+info: Bookmark get Successfully 2023-08-17 16:34:41
+info: Bookmark get Successfully 2023-08-17 16:34:52

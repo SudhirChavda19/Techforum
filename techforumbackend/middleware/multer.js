@@ -1,4 +1,5 @@
 const multer = require("multer");
+const logger = require("../log/logger");
 
 const multerStorage = multer.memoryStorage();
 

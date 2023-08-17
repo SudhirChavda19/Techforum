@@ -1,4 +1,5 @@
 const Blog = require("../model/blog");
+const logger = require("../log/logger");
 
 /**
      * This function get data from req query to fetch all the blog using pagination
@@ -53,12 +54,14 @@ exports.blogs = async (req, res) => {
         ];
 
         const blogs = await Blog.aggregate(pipeline);
+        logger.log("info", "Blog Fetched!");
         return res.status(201).json({
             status: "Success",
             message: "Blog Fetched!",
             blogs,
         });
     } catch (error) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server error",
@@ -82,17 +85,20 @@ exports.blog = async (req, res) => {
             },
         ]);
         if (!blog) {
+            logger.log("error", "Blog not found!");
             return res.status(404).json({
                 status: "Fail",
                 message: "Blog not found!",
             });
         }
+        logger.log("info", "Succesfully got the Blog");
         return res.status(201).send({
             status: "Success",
             message: "Succesfully got the Blog",
             data: blog,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -120,12 +126,14 @@ exports.createBlog = async (req, res) => {
     });
     try {
         await blog.save();
+        logger.log("info", "Blog posted successfully");
         return res.status(201).json({
             status: "Success",
             message: "Blog posted successfully",
             data: blog,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -149,17 +157,20 @@ exports.getBlog = async (req, res) => {
             },
         ]);
         if (!blog) {
+            logger.log("error", "Data not Found");
             return res.status(404).json({
                 status: "Fail",
                 message: "Data not Found",
             });
         }
+        logger.log("info", "Blog get successfully");
         return res.status(200).json({
             status: "Success",
-            message: " Blog get successfully",
+            message: "Blog get successfully",
             data: blog,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -180,12 +191,14 @@ exports.getBlogTitle = async (req, res) => {
         const blogsData = blogsd.map((btitle) => ({
             title: btitle.title,
         }));
+        logger.log("info", "Blog Title get successfully");
         return res.status(201).json({
             status: "Success",
-            message: " Blog Title get successfully",
+            message: "Blog Title get successfully",
             blogs: blogsData,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -205,16 +218,19 @@ exports.deleteBlog = async (req, res) => {
         const { id } = req.params;
         const deleteblog = await Blog.findByIdAndDelete(id);
         if (!deleteblog) {
+            logger.log("error", "Already deleted!");
             return res.status(404).json({
                 status: "Fail",
                 message: "Already deleted!",
             });
         }
+        logger.log("info", "Succesfully deleted a blog");
         return res.status(201).send({
             status: "Success",
             message: "Succesfully deleted a blog",
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -243,17 +259,20 @@ exports.updateBlog = async (req, res) => {
         );
 
         if (!updateblog) {
+            logger.log("error", "Blog not found!");
             return res.status(404).json({
                 status: "Fail",
                 message: "Blog not found!",
             });
         }
+        logger.log("info", "Succesfully updated a blog");
         return res.status(201).send({
             status: "Success",
             message: "Succesfully updated a blog",
             data: updateblog,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",

@@ -1,4 +1,5 @@
 const Document = require("../model/doc");
+const logger = require("../log/logger");
 
 /**
      * This function fetch all the documents
@@ -15,12 +16,14 @@ exports.getDocument = async (req, res) => {
             },
         ]);
         console.log(docsdata);
+        logger.log("info", "Succesfully got all Documents");
         return res.status(201).json({
             status: "Success",
             message: "Succesfully got all Documents",
             data: docsdata,
         });
     } catch (error) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -38,7 +41,6 @@ exports.getDocument = async (req, res) => {
 exports.getDocuments = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(id, "this is the document id");
         const doc = await Document.findById(id).populate([
             {
                 path: "userId",
@@ -46,18 +48,20 @@ exports.getDocuments = async (req, res) => {
         ]);
         console.log(doc);
         if (!doc) {
+            logger.log("error", "Document not found!");
             return res.status(404).json({
                 status: "Fail",
                 message: "Document not found!",
-                detail: "We cannot find the page you are looking for.",
             });
         }
+        logger.log("info", "Succesfully got the Document");
         return res.status(201).json({
             status: "Success",
             message: "Succesfully got the Document",
             data: doc,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -74,6 +78,7 @@ exports.getDocuments = async (req, res) => {
 // post a new document
 exports.postDocument = async (req, res) => {
     if (!req.file) {
+        logger.log("error", "No file uploaded");
         return res.status(400).json({
             status: "Fail",
             message: "No file uploaded",
@@ -90,13 +95,14 @@ exports.postDocument = async (req, res) => {
             docData,
             userId,
         });
+        logger.log("info", "Succesfully posted a Document");
         return res.status(201).json({
             status: "Success",
             message: "Succesfully posted a Document",
             data: document,
         });
     } catch (error) {
-        console.error(error);
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -116,16 +122,19 @@ exports.deleteDocument = async (req, res) => {
         const { id } = req.params;
         const deleteD = await Document.findByIdAndDelete(id);
         if (!deleteD) {
+            logger.log("error", "Already deleted!");
             return res.status(404).json({
                 status: "Fail",
                 message: "Already deleted!",
             });
         }
+        logger.log("info", "Succesfully deleted Document");
         return res.status(201).json({
             status: "Success",
             message: "Succesfully deleted Document",
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",

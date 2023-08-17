@@ -1,5 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const Tag = require("../model/tag");
+const logger = require("../log/logger");
 
 module.exports = {
     /**
@@ -13,6 +14,7 @@ module.exports = {
             const tag = req.body.name;
             const newTag = new Tag({ name: tag });
             await newTag.save();
+            logger.log("info", "Added Tag");
             return res.status(201).json({
                 status: "Success",
                 message: "Added Tag",
@@ -20,14 +22,16 @@ module.exports = {
             });
         } catch (err) {
             if (err instanceof mongoose.Error.ValidationError) {
+                logger.log("error", "Invalid Tag");
                 return res.status(400).json({
                     status: "Fail",
                     message: "Invalid Tag",
                 });
             }
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
-                message: `Internal Server Error: ${err.message}`,
+                message: `Server Error`,
             });
         }
     },
@@ -47,12 +51,14 @@ module.exports = {
                 // eslint-disable-next-line no-underscore-dangle
                 id: tag._id,
             }));
+            logger.log("info", "Tags Get Successfully");
             return res.status(201).json({
                 status: "Success",
                 message: "Tags Get Successfully",
                 tags: allTags,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",
@@ -70,6 +76,7 @@ module.exports = {
         try {
             const { id } = req.params;
             if (!id) {
+                logger.log("error", "Tag Id not found");
                 return res.status(404).json({
                     status: "Fail",
                     message: "Tag Id not found",
@@ -77,16 +84,19 @@ module.exports = {
             }
             const tag = await Tag.findByIdAndDelete({ _id: id });
             if (!tag) {
+                logger.log("error", "Tag not found");
                 return res.status(404).json({
                     status: "Fail",
                     message: "Tag not found",
                 });
             }
+            logger.log("info", "Tag deleted");
             return res.status(201).json({
                 status: "Success",
                 message: "Tag deleted",
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",

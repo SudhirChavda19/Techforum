@@ -1,4 +1,5 @@
 const Bookmark = require("../model/bookmark");
+const logger = require("../log/logger");
 
 module.exports = {
     /**
@@ -16,6 +17,7 @@ module.exports = {
             if (addedBookmark) {
                 // eslint-disable-next-line no-underscore-dangle
                 await Bookmark.findByIdAndDelete(addedBookmark._id);
+                logger.log("info", "Bookmark removed");
                 return res.status(200).json({
                     status: "Success",
                     message: "Bookmark removed",
@@ -23,12 +25,14 @@ module.exports = {
             }
             const bookmark = new Bookmark({ userId, questionId });
             await bookmark.save();
+            logger.log("info", "Added bookmark");
             return res.status(201).json({
                 status: "Success",
                 message: "Added bookmark",
                 data: bookmark,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",
@@ -54,12 +58,14 @@ module.exports = {
                     },
                 },
             ]);
+            logger.log("info", "Bookmark get Successfully");
             return res.status(200).json({
                 status: "Success",
-                message: "Bookmarks",
+                message: "Bookmark get Successfully",
                 data: bookmarks,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",
@@ -77,12 +83,14 @@ module.exports = {
         try {
             const { userId } = req.params;
             const bookmarks = await Bookmark.find({ userId });
+            logger.log("info", "Bookmark get Successfully");
             return res.status(200).json({
                 status: "Success",
-                message: "Bookmarks",
+                message: "Bookmark get Successfully",
                 data: bookmarks,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",

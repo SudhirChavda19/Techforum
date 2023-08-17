@@ -3,6 +3,7 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const User = require("../model/user");
 require("dotenv").config();
+const logger = require("../log/logger");
 
 module.exports = {
     // eslint-disable-next-line consistent-return
@@ -19,8 +20,9 @@ module.exports = {
             const { url } = process.env;
             const user = await User.findOne({ emailId });
             if (!user) {
+                logger.log("error", "User not found");
                 return res.status(404).json({
-                    status: 404,
+                    status: "Fail",
                     message: "User not found",
                 });
             }
@@ -78,13 +80,15 @@ module.exports = {
                 </html>
   `,
             };
-            transporter.sendMail(mailOptions, (error) => {
-                if (error) {
+            transporter.sendMail(mailOptions, (err) => {
+                if (err) {
+                    logger.log("error", `Server Error: ${err}`);
                     return res.status(500).json({
                         status: "Fail",
                         message: "Server Error",
                     });
                 }
+                logger.log("info", "Reset password email sent");
                 return res
                     .cookie("email", emailId, {
                         maxAge: 900000,
@@ -100,6 +104,7 @@ module.exports = {
                     });
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",
@@ -121,6 +126,7 @@ module.exports = {
             const { email } = req.cookies;
 
             if (!email || !password) {
+                logger.log("error", "Missing email or password");
                 return res.status(404).json({
                     status: "Fail",
                     message: "Missing email or password",
@@ -129,6 +135,7 @@ module.exports = {
             const user = await User.findOne({ emailId: email });
 
             if (!user) {
+                logger.log("error", "Invalid Email or user");
                 return res.status(400).json({
                     status: "Fail",
                     message: "Invalid Email or user",
@@ -140,6 +147,7 @@ module.exports = {
                 .toString("hex");
             user.password = hashedPassword;
             await user.save();
+            logger.log("info", "Password updated successfully");
             return res
                 .clearCookie("email", { path: "/forgotpassword" })
                 .status(201)
@@ -148,6 +156,7 @@ module.exports = {
                     message: "Password updated successfully",
                 });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",

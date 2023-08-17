@@ -2,6 +2,7 @@
 const crypto = require("crypto");
 const User = require("../model/user");
 require("dotenv").config();
+const logger = require("../log/logger");
 
 module.exports = {
     /**
@@ -20,6 +21,7 @@ module.exports = {
         } = req.body;
         const existingUser = await User.findOne({ emailId });
         if (existingUser) {
+            logger.log("error", "Email address already in use");
             return res.status(400).json({
                 status: "Fail",
                 message: "Email address already in use",
@@ -27,7 +29,7 @@ module.exports = {
         }
 
         try {
-            const { salt } = process.env.SALT;
+            const salt = process.env.SALT;
             const hashedPassword = crypto
                 .pbkdf2Sync(password, salt, 1000, 64, "sha512")
                 .toString("hex");
@@ -39,13 +41,14 @@ module.exports = {
                 userRole: process.env.USER_ROLE,
             });
             await user.save();
+            logger.log("info", "User created successfully");
             return res.status(201).json({
                 status: "Success",
                 message: "User created successfully",
                 data: emailId,
             });
         } catch (err) {
-            console.log("error :", err);
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",

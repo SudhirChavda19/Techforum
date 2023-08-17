@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const User = require("../model/user");
 const UserRole = require("../model/userRole");
+const logger = require("../log/logger");
 require("dotenv").config();
 
 module.exports = {
@@ -17,6 +18,7 @@ module.exports = {
             const { password } = req.body;
             const user = await User.findOne({ emailId });
             if (!user) {
+                logger.log("error", "Incorrect Email or password");
                 return res.status(400).json({
                     status: "Fail",
                     message: "Incorrect Email or password",
@@ -34,6 +36,7 @@ module.exports = {
 
                 const cookieString = `jwt=${token}; HttpOnly; Expires=${expirationTime.toUTCString()}; Path=/api/users`;
                 res.setHeader("Set-Cookie", cookieString);
+                logger.log("info", "Signed in successfully");
                 return res.status(200).json({
                     status: "Success",
                     message: "Signed in successfully",
@@ -44,12 +47,13 @@ module.exports = {
                     },
                 });
             }
+            logger.log("error", "Incorrect Email or password");
             return res.status(400).json({
                 status: "Fail",
                 message: "Incorrect Email or password",
             });
         } catch (err) {
-            console.log(err);
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",
@@ -69,22 +73,24 @@ module.exports = {
             const user = await User.findOne({ _id: id });
             const role = user.userRole;
             const userRole = await UserRole.findOne({ _id: role });
-
+            logger.log("info", "user role get Successfully");
             return res.status(200).json({
                 status: "Success",
+                message: "user role get Successfully",
                 userRole: userRole.roleName,
             });
         } catch (err) {
             if (err.name === "CastError" && err.kind === "ObjectId") {
+                logger.log("error", "Invalid Id");
                 return res.status(400).json({
                     status: "Fail",
-                    message: "Invalid Id ",
+                    message: "Invalid Id",
                 });
             }
-
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
-                message: `Internal Server Error: ${err.message}`,
+                message: `Server Error`,
             });
         }
     },

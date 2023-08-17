@@ -1,5 +1,6 @@
 const Blog = require("../model/blog");
 const Document = require("../model/doc");
+const logger = require("../log/logger");
 
 /**
      * This function get data from req body and param to approve blog by admin to post
@@ -18,17 +19,20 @@ module.exports = {
             });
 
             if (!updateblog) {
+                logger.log("error","Blog not found!");
                 return res.status(404).json({
                     status: "Fail",
                     message: "Blog not found!",
                 });
             }
+            logger.log("info", "Succesfully approved a blog");
             return res.status(201).json({
                 status: "Success",
                 message: "Succesfully approved a blog",
                 data: updateblog,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",
@@ -51,17 +55,20 @@ module.exports = {
             });
 
             if (!approvedoc) {
+                logger.log("error", "Document not found!");
                 return res.status(404).json({
                     status: "Fail",
                     message: "Document not found!",
                 });
             }
+            logger.log("info", "Succesfully approved document");
             return res.status(201).send({
                 status: "Success",
                 message: "Succesfully approved document",
                 data: approvedoc,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",
@@ -116,12 +123,14 @@ module.exports = {
             ];
 
             const blogs = await Blog.aggregate(pipeline);
+            logger.log("info", "Blog get Succesfully");
             return res.status(201).json({
                 status: "Success",
                 message: "Blog get Succesfully",
                 body: blogs,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",
@@ -176,12 +185,14 @@ module.exports = {
             ];
 
             const docs = await Document.aggregate(pipeline);
+            logger.log("info", "Document get Succesfully");
             return res.status(201).json({
                 status: "Success",
                 message: "Document get Succesfully",
                 body: docs,
             });
         } catch (error) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
                 status: "Fail",
                 message: "Server Error",

@@ -1,13 +1,14 @@
 const Question = require("../model/question");
 const Bookmark = require("../model/bookmark");
 const Answer = require("../model/answer");
+const logger = require("../log/logger");
 
 /**
-     * This function accept data and create question
-     * @param {Object} req req contain data that comes from client
-     * @param {Object} res res send response to client
-     * @returns {Object} server will return response in json object
-     */
+ * This function accept data and create question
+ * @param {Object} req req contain data that comes from client
+ * @param {Object} res res send response to client
+ * @returns {Object} server will return response in json object
+ */
 // post a question
 exports.createQuestion = async (req, res) => {
     const { userId } = req.body;
@@ -18,6 +19,7 @@ exports.createQuestion = async (req, res) => {
 
     if (questionDescribe !== undefined) {
         if (questionDescribe.length === 0) {
+            logger.log("error", "Question Describe can't be empty");
             return res.status(400).json({
                 status: "Fail",
                 message: "Question Describe can't be empty",
@@ -26,24 +28,25 @@ exports.createQuestion = async (req, res) => {
     }
     if (tags !== undefined) {
         if (tags.length === 0) {
+            logger.log("error", "Tags can't be empty");
             return res.status(400).json({
                 status: "Fail",
                 message: "Tags can't be empty",
             });
         }
         if (!Array.isArray(tags)) {
-            return res
-                .status(400)
-                .json({
-                    status: "Fail",
-                    message: "tags must be in Array",
-                });
+            logger.log("error", "tags must be in Array");
+            return res.status(400).json({
+                status: "Fail",
+                message: "tags must be in Array",
+            });
         }
     }
 
     const questionData = await Question.findOne({ question });
     if (questionData !== null) {
         if (questionData.question === question) {
+            logger.log("error", "Question already exist");
             return res.status(400).json({
                 status: "Fail",
                 message: "Question already exist",
@@ -59,13 +62,14 @@ exports.createQuestion = async (req, res) => {
             createdAt,
         });
         await questionCreated.save();
+        logger.log("info", "Question created successfully");
         return res.status(201).json({
             status: "Success",
             message: "Question created successfully",
             data: questionCreated,
         });
     } catch (err) {
-        console.log(err);
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -74,11 +78,11 @@ exports.createQuestion = async (req, res) => {
 };
 
 /**
-     * This function send data to the user in form of pagination
-     * @param {Object} req req contain data that comes from client
-     * @param {Object} res res send response to client
-     * @returns {Object} server will return response in json object
-     */
+ * This function send data to the user in form of pagination
+ * @param {Object} req req contain data that comes from client
+ * @param {Object} res res send response to client
+ * @returns {Object} server will return response in json object
+ */
 // question pagination
 exports.questionPagination = async (req, res) => {
     try {
@@ -97,6 +101,7 @@ exports.questionPagination = async (req, res) => {
         const count = await Question.countDocuments();
         const check = page * limit;
         if (check > count) {
+            logger.log("error", "please decrease the limit or page");
             return res.status(404).json({
                 status: "Fail",
                 message: "please decrease the limit or page",
@@ -107,11 +112,13 @@ exports.questionPagination = async (req, res) => {
         const hasMore = page < totalPages;
 
         if (!questionsData) {
+            logger.log("error", "Data Not Found");
             return res.status(404).json({
                 status: "Fail",
                 message: "Data Not Found",
             });
         }
+        logger.log("info", "Questions Readed successfully");
         return res.status(200).json({
             status: "Success",
             message: "Questions Readed successfully",
@@ -121,6 +128,7 @@ exports.questionPagination = async (req, res) => {
             hasMore,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -129,11 +137,11 @@ exports.questionPagination = async (req, res) => {
 };
 
 /**
-     * This function send all question to the user
-     * @param {Object} req req contain data that comes from user
-     * @param {Object} res res send response to user
-     * @returns {Object} server will return response in json object
-     */
+ * This function send all question to the user
+ * @param {Object} req req contain data that comes from user
+ * @param {Object} res res send response to user
+ * @returns {Object} server will return response in json object
+ */
 // read the questions from database
 exports.readQuestions = async (req, res) => {
     try {
@@ -143,17 +151,20 @@ exports.readQuestions = async (req, res) => {
             },
         ]);
         if (!questionsData) {
+            logger.log("error", "Data Not Found");
             return res.status(404).json({
                 status: "Fail",
                 message: "Data Not Found",
             });
         }
+        logger.log("info", "Questions Readed successfully");
         return res.status(200).json({
             status: "Success",
             message: "Questions Readed successfully",
             data: questionsData,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -162,11 +173,11 @@ exports.readQuestions = async (req, res) => {
 };
 
 /**
-     * This function get one question id and send response to user
-     * @param {Object} req req contain data that comes from client
-     * @param {Object} res res send response to client
-     * @returns {Object} server will return response in json object
-     */
+ * This function get one question id and send response to user
+ * @param {Object} req req contain data that comes from client
+ * @param {Object} res res send response to client
+ * @returns {Object} server will return response in json object
+ */
 // get a speific question by question id
 exports.readByIdQuestion = async (req, res) => {
     try {
@@ -179,18 +190,20 @@ exports.readByIdQuestion = async (req, res) => {
         ]);
 
         if (!questionData) {
+            logger.log("error", "Data Not Found, Please enter valid question id");
             return res.status(404).json({
                 status: "Fail",
                 message: "Data Not Found, Please enter valid question id",
             });
         }
+        logger.log("info", "Question Readed successfully");
         return res.status(200).json({
             status: "Success",
             message: "Question Readed successfully",
             data: questionData,
         });
     } catch (err) {
-        console.log(err);
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -199,11 +212,11 @@ exports.readByIdQuestion = async (req, res) => {
 };
 
 /**
-     * This function get one user id and send responce of that user post question
-     * @param {Object} req req contain data that comes from client
-     * @param {Object} res res send response to client
-     * @returns {Object} server will return response in json object
-     */
+ * This function get one user id and send responce of that user post question
+ * @param {Object} req req contain data that comes from client
+ * @param {Object} res res send response to client
+ * @returns {Object} server will return response in json object
+ */
 // get a speific question by user id
 exports.readByIdUser = async (req, res) => {
     try {
@@ -215,17 +228,20 @@ exports.readByIdUser = async (req, res) => {
         ]);
 
         if (!questionData) {
+            logger.log("error", "Data Not Found, Please enter valid user Id");
             return res.status(400).json({
                 status: "Fail",
                 message: "Data Not Found, Please enter valid user Id",
             });
         }
+        logger.log("info", "Question Readed successfully");
         return res.status(200).json({
             status: "Success",
             message: "Question Readed successfully",
             data: questionData,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -234,12 +250,12 @@ exports.readByIdUser = async (req, res) => {
 };
 
 /**
-     * This function get one question id from params and
-     *  update that question send responce as that question
-     * @param {Object} req req contain data that comes from client
-     * @param {Object} res res send response to client
-     * @returns {Object} server will return response in json object
-     */
+ * This function get one question id from params and
+ *  update that question send responce as that question
+ * @param {Object} req req contain data that comes from client
+ * @param {Object} res res send response to client
+ * @returns {Object} server will return response in json object
+ */
 // update perticular question
 exports.updateQuestion = async (req, res) => {
     try {
@@ -255,18 +271,20 @@ exports.updateQuestion = async (req, res) => {
         );
 
         if (!updateQuestion) {
+            logger.log("error", "Data Not Found, Enter valid id");
             return res.status(400).json({
                 status: "Fail",
                 message: "Data Not Found, Enter valid id",
             });
         }
-
+        logger.log("info", "Question Updated Successfully");
         return res.status(200).json({
             status: "Success",
             message: "Question Updated Successfully",
             data: updateQuestion,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
@@ -275,17 +293,18 @@ exports.updateQuestion = async (req, res) => {
 };
 
 /**
-     * This function get one question id from params and delete that question
-     * @param {Object} req req contain data that comes from client
-     * @param {Object} res res send response to client
-     * @returns {Object} server will return response in json object
-     */
+ * This function get one question id from params and delete that question
+ * @param {Object} req req contain data that comes from client
+ * @param {Object} res res send response to client
+ * @returns {Object} server will return response in json object
+ */
 // delete perticular question
 exports.deleteQuestion = async (req, res) => {
     try {
         const { id } = req.params;
         const deleteQuestion = await Question.findByIdAndDelete(id);
         if (!deleteQuestion) {
+            logger.log("error", "Data Not Found, Enter valid id");
             return res.status(404).json({
                 status: "Fail",
                 message: "Data Not Found, Enter valid id",
@@ -293,11 +312,13 @@ exports.deleteQuestion = async (req, res) => {
         }
         await Bookmark.deleteMany({ questionId: id });
         await Answer.deleteMany({ questionId: id });
+        logger.log("info", "Question Deleted Successfully");
         return res.status(200).json({
             status: "Success",
             message: "Question Deleted Successfully",
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
             message: "Server Error",
