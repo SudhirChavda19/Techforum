@@ -22,7 +22,7 @@ exports.createQuestion = async (req, res) => {
             logger.log("error", "Question Describe can't be empty");
             return res.status(400).json({
                 status: "Fail",
-                message: "Question Describe can't be empty",
+                error: "Question Describe can't be empty",
             });
         }
     }
@@ -31,14 +31,14 @@ exports.createQuestion = async (req, res) => {
             logger.log("error", "Tags can't be empty");
             return res.status(400).json({
                 status: "Fail",
-                message: "Tags can't be empty",
+                error: "Tags can't be empty",
             });
         }
         if (!Array.isArray(tags)) {
             logger.log("error", "tags must be in Array");
             return res.status(400).json({
                 status: "Fail",
-                message: "tags must be in Array",
+                error: "tags must be in Array",
             });
         }
     }
@@ -72,7 +72,7 @@ exports.createQuestion = async (req, res) => {
         logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
             status: "Fail",
-            message: "Server Error",
+            error: "Server Error",
         });
     }
 };

@@ -40,7 +40,7 @@ module.exports = {
                 return res.status(200).json({
                     status: "Success",
                     message: "Signed in successfully",
-                    body: {
+                    data: {
                         _id: user._id,
                         role: user.userRole,
                         name: `${user.firstName} ${user.lastName}`,
