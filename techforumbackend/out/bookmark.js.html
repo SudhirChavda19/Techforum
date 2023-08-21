@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: bookmark.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: bookmark.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const Bookmark = require("../model/bookmark");
+const logger = require("../log/logger");
+
+module.exports = {
+    /**
+     * This function get data from req body to add or remove bookmark to a question
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
+    addBookmark: async (req, res) => {
+        try {
+            const { questionId } = req.body;
+            const { userId } = req.body;
+            const addedBookmark = await Bookmark.findOne({ userId, questionId });
+
+            if (addedBookmark) {
+                // eslint-disable-next-line no-underscore-dangle
+                await Bookmark.findByIdAndDelete(addedBookmark._id);
+                logger.log("info", "Bookmark removed");
+                return res.status(200).json({
+                    status: "Success",
+                    message: "Bookmark removed",
+                });
+            }
+            const bookmark = new Bookmark({ userId, questionId });
+            await bookmark.save();
+            logger.log("info", "Added bookmark");
+            return res.status(201).json({
+                status: "Success",
+                message: "Added bookmark",
+                data: bookmark,
+            });
+        } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
+            return res.status(500).json({
+                status: "Fail",
+                message: "Server Error",
+            });
+        }
+    },
+
+    /**
+     * This function get data from req param to fetch manage bookmark by user
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
+    getmanageBookmarkById: async (req, res) => {
+        try {
+            const { userId } = req.params;
+            const bookmarks = await Bookmark.find({ userId }).populate([
+                {
+                    path: "questionId",
+                    populate: {
+                        path: "userId",
+                        model: "user",
+                    },
+                },
+            ]);
+            logger.log("info", "Bookmark get Successfully");
+            return res.status(200).json({
+                status: "Success",
+                message: "Bookmark get Successfully",
+                data: bookmarks,
+            });
+        } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
+            return res.status(500).json({
+                status: "Fail",
+                message: "Server Error",
+            });
+        }
+    },
+
+    /**
+     * This function get data from req param to fetch bookmark for a user
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
+    getBookmarkByUserId: async (req, res) => {
+        try {
+            const { userId } = req.params;
+            const bookmarks = await Bookmark.find({ userId });
+            logger.log("info", "Bookmark get Successfully");
+            return res.status(200).json({
+                status: "Success",
+                message: "Bookmark get Successfully",
+                data: bookmarks,
+            });
+        } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
+            return res.status(500).json({
+                status: "Fail",
+                message: "Server Error",
+            });
+        }
+    },
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Downvote">Downvote</a></li><li><a href="global.html#Upvote">Upvote</a></li><li><a href="global.html#addAnswer">addAnswer</a></li><li><a href="global.html#blog">blog</a></li><li><a href="global.html#blogs">blogs</a></li><li><a href="global.html#createBlog">createBlog</a></li><li><a href="global.html#createQuestion">createQuestion</a></li><li><a href="global.html#deleteAnswer">deleteAnswer</a></li><li><a href="global.html#deleteBlog">deleteBlog</a></li><li><a href="global.html#deleteDocument">deleteDocument</a></li><li><a href="global.html#deleteQuestion">deleteQuestion</a></li><li><a href="global.html#editAnswer">editAnswer</a></li><li><a href="global.html#getAnswerByquestionId">getAnswerByquestionId</a></li><li><a href="global.html#getBlog">getBlog</a></li><li><a href="global.html#getBlogTitle">getBlogTitle</a></li><li><a href="global.html#getDocument">getDocument</a></li><li><a href="global.html#getDocuments">getDocuments</a></li><li><a href="global.html#postDocument">postDocument</a></li><li><a href="global.html#questionPagination">questionPagination</a></li><li><a href="global.html#readByIdQuestion">readByIdQuestion</a></li><li><a href="global.html#readByIdUser">readByIdUser</a></li><li><a href="global.html#readQuestions">readQuestions</a></li><li><a href="global.html#searchQuestion">searchQuestion</a></li><li><a href="global.html#updateBlog">updateBlog</a></li><li><a href="global.html#updateQuestion">updateQuestion</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Aug 17 2023 16:52:22 GMT+0530 (India Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -3,8 +3,7 @@ const express = require("express");
 const signoutRoutes = express.Router();
 
 signoutRoutes.post("/signout", (req, res) => {
-    res.clearCookie("email", { path: "/" });
-    res.clearCookie("jwt", { path: "/" }).status(200).json({
+    res.status(200).json({
         status: 200,
         message: "Signed out successfully",
     });

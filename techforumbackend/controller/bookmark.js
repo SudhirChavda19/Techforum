@@ -1,77 +1,51 @@
 const Bookmark = require("../model/bookmark");
+const logger = require("../log/logger");
 
 module.exports = {
+    /**
+     * This function get data from req body to add or remove bookmark to a question
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
     addBookmark: async (req, res) => {
         try {
-            if (Object.keys(req.body).length === 0) {
-                return res
-                    .status(406)
-                    .json({
-                        status: 406,
-                        message: "Data not Found, Payload Not Acceptable",
-                    });
-            }
-            let userId = await req.body.userId;
-            let { questionId } = req.body;
-            if (userId === undefined) {
-                return res
-                    .status(406)
-                    .json({
-                        status: 406,
-                        message: "userId is not defined",
-                    });
-            }
-            userId = userId.trim();
-            if (userId.length === 0) {
-                return res
-                    .status(406)
-                    .json({
-                        status: 406,
-                        message: "please enter valid user Id",
-                    });
-            }
-            if (questionId === undefined) {
-                return res
-                    .status(406)
-                    .json({
-                        status: 406,
-                        message: "please enter the Quesiton Id",
-                    });
-            }
-            questionId = questionId.trim();
-            if (questionId.length === 0) {
-                return res
-                    .status(406)
-                    .json({
-                        status: 406,
-                        message: "QuestionId can't be empty",
-                    });
-            }
+            const { questionId } = req.body;
+            const { userId } = req.body;
             const addedBookmark = await Bookmark.findOne({ userId, questionId });
 
             if (addedBookmark) {
                 // eslint-disable-next-line no-underscore-dangle
                 await Bookmark.findByIdAndDelete(addedBookmark._id);
+                logger.log("info", "Bookmark removed");
                 return res.status(200).json({
-                    status: 200,
+                    status: "Success",
                     message: "Bookmark removed",
                 });
             }
             const bookmark = new Bookmark({ userId, questionId });
             await bookmark.save();
+            logger.log("info", "Added bookmark");
             return res.status(201).json({
-                status: 201,
+                status: "Success",
                 message: "Added bookmark",
                 data: bookmark,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
-                status: 500,
+                status: "Fail",
                 message: "Server Error",
             });
         }
     },
 
+    /**
+     * This function get data from req param to fetch manage bookmark by user
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
     getmanageBookmarkById: async (req, res) => {
         try {
             const { userId } = req.params;
@@ -84,31 +58,41 @@ module.exports = {
                     },
                 },
             ]);
+            logger.log("info", "Bookmark get Successfully");
             return res.status(200).json({
-                status: 200,
-                message: "Bookmarks",
+                status: "Success",
+                message: "Bookmark get Successfully",
                 data: bookmarks,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
-                status: 500,
+                status: "Fail",
                 message: "Server Error",
             });
         }
     },
 
+    /**
+     * This function get data from req param to fetch bookmark for a user
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
     getBookmarkByUserId: async (req, res) => {
         try {
             const { userId } = req.params;
             const bookmarks = await Bookmark.find({ userId });
+            logger.log("info", "Bookmark get Successfully");
             return res.status(200).json({
-                status: 200,
-                message: "Bookmarks",
+                status: "Success",
+                message: "Bookmark get Successfully",
                 data: bookmarks,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
-                status: 500,
+                status: "Fail",
                 message: "Server Error",
             });
         }

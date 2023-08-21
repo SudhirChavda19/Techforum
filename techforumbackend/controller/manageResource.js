@@ -1,6 +1,13 @@
 const Blog = require("../model/blog");
 const Document = require("../model/doc");
+const logger = require("../log/logger");
 
+/**
+     * This function get data from req body and param to approve blog by admin to post
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // update an existing blog
 module.exports = {
     approveBlog: async (req, res) => {
@@ -12,23 +19,33 @@ module.exports = {
             });
 
             if (!updateblog) {
+                logger.log("error", "Blog not found!");
                 return res.status(404).json({
-                    status: 404,
+                    status: "Fail",
                     message: "Blog not found!",
                 });
             }
+            logger.log("info", "Succesfully approved a blog");
             return res.status(201).json({
-                status: 201,
+                status: "Success",
                 message: "Succesfully approved a blog",
                 data: updateblog,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
-                status: 500,
+                status: "Fail",
                 message: "Server Error",
             });
         }
     },
+
+    /**
+     * This function get data from req body and param to approve document by admin to post
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
     approveDocument: async (req, res) => {
         try {
             const { id } = req.params;
@@ -38,23 +55,33 @@ module.exports = {
             });
 
             if (!approvedoc) {
+                logger.log("error", "Document not found!");
                 return res.status(404).json({
-                    status: 404,
+                    status: "Fail",
                     message: "Document not found!",
                 });
             }
+            logger.log("info", "Succesfully approved document");
             return res.status(201).send({
-                status: 201,
+                status: "Success",
                 message: "Succesfully approved document",
                 data: approvedoc,
             });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
-                status: 500,
+                status: "Fail",
                 message: "Server Error",
             });
         }
     },
+
+    /**
+     * This function get data from req query to fetch all blogs on admin side
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
     blogs: async (req, res) => {
         try {
             const pageNumber = parseInt(req.query.pageNumber, 10) || 1;
@@ -62,7 +89,7 @@ module.exports = {
             const pipeline = [
                 {
                     $sort: {
-                        isApproved: 1,
+                        createdDate: -1,
                     },
                 },
                 {
@@ -96,14 +123,27 @@ module.exports = {
             ];
 
             const blogs = await Blog.aggregate(pipeline);
-            return res.json(blogs);
+            logger.log("info", "Blog get Succesfully");
+            return res.status(201).json({
+                status: "Success",
+                message: "Blog get Succesfully",
+                body: blogs,
+            });
         } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
-                status: 500,
+                status: "Fail",
                 message: "Server Error",
             });
         }
     },
+
+    /**
+     * This function get data from req query to fetch all documents on admin side
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
     getDocument: async (req, res) => {
         try {
             const pageNumber = parseInt(req.query.pageNumber, 10) || 1;
@@ -145,10 +185,16 @@ module.exports = {
             ];
 
             const docs = await Document.aggregate(pipeline);
-            return res.json(docs);
-        } catch (error) {
+            logger.log("info", "Document get Succesfully");
+            return res.status(201).json({
+                status: "Success",
+                message: "Document get Succesfully",
+                body: docs,
+            });
+        } catch (err) {
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
-                status: 500,
+                status: "Fail",
                 message: "Server Error",
             });
         }

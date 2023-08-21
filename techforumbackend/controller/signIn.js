@@ -2,39 +2,25 @@ const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const User = require("../model/user");
 const UserRole = require("../model/userRole");
+const logger = require("../log/logger");
 require("dotenv").config();
 
 module.exports = {
+    /**
+     * This function get data from req body to signin an user
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
     signIn: async (req, res) => {
         try {
-            let { emailId } = req.body;
+            const { emailId } = req.body;
             const { password } = req.body;
-
-            if (Object.keys(req.body).length === 0) {
-                return res.status(404).json({ status: 404, message: "Data not Found" });
-            }
-
-            if (emailId === undefined) {
-                return res.status(400).json({ status: 400, message: "Email-id not found" });
-            }
-
-            emailId = emailId.trim();
-            if (emailId.length === 0) {
-                return res.status(400).json({ status: 400, message: "Email-id can't be empty" });
-            }
-
-            if (password === undefined) {
-                return res.status(400).json({ status: 400, message: "Password not found" });
-            }
-
-            if (password.length === 0) {
-                return res.status(400).json({ status: 400, message: "Password can't be empty" });
-            }
-
             const user = await User.findOne({ emailId });
             if (!user) {
+                logger.log("error", "Incorrect Email or password");
                 return res.status(400).json({
-                    status: 400,
+                    status: "Fail",
                     message: "Incorrect Email or password",
                 });
             }
@@ -50,51 +36,61 @@ module.exports = {
 
                 const cookieString = `jwt=${token}; HttpOnly; Expires=${expirationTime.toUTCString()}; Path=/api/users`;
                 res.setHeader("Set-Cookie", cookieString);
+                logger.log("info", "Signed in successfully");
                 return res.status(200).json({
-                    status: 200,
+                    status: "Success",
                     message: "Signed in successfully",
-                    body: {
+                    data: {
                         _id: user._id,
                         role: user.userRole,
                         name: `${user.firstName} ${user.lastName}`,
                     },
                 });
             }
-            return res.status(401).json({
-                status: 401,
+            logger.log("error", "Incorrect Email or password");
+            return res.status(400).json({
+                status: "Fail",
                 message: "Incorrect Email or password",
             });
         } catch (err) {
-            console.log(err);
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
-                status: 500,
+                status: "Fail",
                 message: "Server Error",
             });
         }
     },
 
+    /**
+     * This function get data from req param to fetch user role from useid
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
     userRole: async (req, res) => {
         try {
             const { id } = req.params;
             const user = await User.findOne({ _id: id });
             const role = user.userRole;
             const userRole = await UserRole.findOne({ _id: role });
-
+            logger.log("info", "user role get Successfully");
             return res.status(200).json({
-                status: 200,
+                status: "Success",
+                message: "user role get Successfully",
                 userRole: userRole.roleName,
             });
         } catch (err) {
             if (err.name === "CastError" && err.kind === "ObjectId") {
+                logger.log("error", "Invalid Id");
                 return res.status(400).json({
-                    status: 400,
-                    message: "Invalid Id ",
+                    status: "Fail",
+                    message: "Invalid Id",
                 });
             }
-
+            logger.log("error", `Server Error: ${err}`);
             return res.status(500).json({
-                status: 500,
-                message: `Internal Server Error: ${err.message}`,
+                status: "Fail",
+                message: "Server Error",
             });
         }
     },

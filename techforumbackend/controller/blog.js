@@ -1,5 +1,12 @@
 const Blog = require("../model/blog");
+const logger = require("../log/logger");
 
+/**
+     * This function get data from req query to fetch all the blog using pagination
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // get all posted blogs
 exports.blogs = async (req, res) => {
     try {
@@ -47,12 +54,27 @@ exports.blogs = async (req, res) => {
         ];
 
         const blogs = await Blog.aggregate(pipeline);
-        res.json(blogs);
-    } catch (error) {
-        res.status(500).json({ error: "Server error" });
+        logger.log("info", "Blog Fetched!");
+        return res.status(201).json({
+            status: "Success",
+            message: "Blog Fetched!",
+            blogs,
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server error",
+        });
     }
 };
 
+/**
+     * This function get data from req param to fetch a blog by a question
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // get a specific blog
 exports.blog = async (req, res) => {
     try {
@@ -63,88 +85,38 @@ exports.blog = async (req, res) => {
             },
         ]);
         if (!blog) {
+            logger.log("error", "Blog not found!");
             return res.status(404).json({
-                status: 404,
+                status: "Fail",
                 message: "Blog not found!",
             });
         }
+        logger.log("info", "Succesfully got the Blog");
         return res.status(201).send({
-            status: 201,
+            status: "Success",
             message: "Succesfully got the Blog",
             data: blog,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }
 };
 
+/**
+     * This function get data from req body to post/create a blog
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // post a new blog
 exports.createBlog = async (req, res) => {
-    if (Object.keys(req.body).length === 0) {
-        return res
-            .status(406)
-            .json({
-                status: 406,
-                message: "Data not Found, Payload Not Acceptable",
-            });
-    }
-    let { title, content } = req.body;
+    const { title, content } = req.body;
     const createdDate = Date.now();
-    let { userId } = req.body;
-    if (userId === undefined) {
-        return res
-            .status(406)
-            .json({
-                status: 406,
-                message: "userId is not defined",
-            });
-    }
-    userId = userId.trim();
-    if (userId.length === 0) {
-        return res
-            .status(406)
-            .json({
-                status: 406,
-                message: "please enter valid user Id",
-            });
-    }
-    if (title === undefined) {
-        return res
-            .status(406)
-            .json({
-                status: 406,
-                message: "please enter the title of the blog",
-            });
-    }
-    title = title.trim();
-    if (title.length === 0) {
-        return res
-            .status(406)
-            .json({
-                status: 406,
-                message: "Title can't be empty ",
-            });
-    }
-    if (content === undefined) {
-        return res
-            .status(406)
-            .json({
-                status: 406,
-                message: "Please enter the content of the blog",
-            });
-    }
-    content = content.trim();
-    if (content.length === 0) {
-        return res
-            .status(406)
-            .json({
-                status: 406,
-                message: "content can't be empty",
-            });
-    }
+    const { userId } = req.body;
 
     const blog = new Blog({
         userId,
@@ -154,19 +126,27 @@ exports.createBlog = async (req, res) => {
     });
     try {
         await blog.save();
+        logger.log("info", "Blog posted successfully");
         return res.status(201).json({
-            status: 201,
+            status: "Success",
             message: "Blog posted successfully",
             data: blog,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }
 };
 
+/**
+     * This function get data from req param to fetch a blog by an user
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // blog get using userId
 exports.getBlog = async (req, res) => {
     try {
@@ -177,24 +157,33 @@ exports.getBlog = async (req, res) => {
             },
         ]);
         if (!blog) {
+            logger.log("error", "Data not Found");
             return res.status(404).json({
-                status: 404,
+                status: "Fail",
                 message: "Data not Found",
             });
         }
+        logger.log("info", "Blog get successfully");
         return res.status(200).json({
-            status: 200,
-            message: " Blog get successfully",
+            status: "Success",
+            message: "Blog get successfully",
             data: blog,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }
 };
 
+/**
+     * This function fetch all blog title data
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 exports.getBlogTitle = async (req, res) => {
     try {
         const projection = { title: 1 };
@@ -202,38 +191,59 @@ exports.getBlogTitle = async (req, res) => {
         const blogsData = blogsd.map((btitle) => ({
             title: btitle.title,
         }));
-        return res.status(201).json({ blogs: blogsData });
+        logger.log("info", "Blog Title get successfully");
+        return res.status(201).json({
+            status: "Success",
+            message: "Blog Title get successfully",
+            blogs: blogsData,
+        });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }
 };
 
+/**
+     * This function get data from req param to delete a blog
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // delete an existing blog
 exports.deleteBlog = async (req, res) => {
     try {
         const { id } = req.params;
         const deleteblog = await Blog.findByIdAndDelete(id);
         if (!deleteblog) {
+            logger.log("error", "Already deleted!");
             return res.status(404).json({
-                status: 404,
+                status: "Fail",
                 message: "Already deleted!",
             });
         }
+        logger.log("info", "Succesfully deleted a blog");
         return res.status(201).send({
-            status: 201,
+            status: "Success",
             message: "Succesfully deleted a blog",
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }
 };
 
+/**
+     * This function get data from req body to update the blog
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
 // update an existing blog
 exports.updateBlog = async (req, res) => {
     try {
@@ -249,19 +259,22 @@ exports.updateBlog = async (req, res) => {
         );
 
         if (!updateblog) {
+            logger.log("error", "Blog not found!");
             return res.status(404).json({
-                status: 404,
+                status: "Fail",
                 message: "Blog not found!",
             });
         }
+        logger.log("info", "Succesfully updated a blog");
         return res.status(201).send({
-            status: 201,
+            status: "Success",
             message: "Succesfully updated a blog",
             data: updateblog,
         });
     } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
         return res.status(500).json({
-            status: 500,
+            status: "Fail",
             message: "Server Error",
         });
     }

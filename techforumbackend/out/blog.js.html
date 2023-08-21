@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: blog.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: blog.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const Blog = require("../model/blog");
+const logger = require("../log/logger");
+
+/**
+     * This function get data from req query to fetch all the blog using pagination
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
+// get all posted blogs
+exports.blogs = async (req, res) => {
+    try {
+        const pageNumber = parseInt(req.query.pageNumber, 10) || 1;
+        const pageSize = parseInt(req.query.pageSize, 10) || 8;
+        const pipeline = [
+            {
+                $match: {
+                    isApproved: true,
+                },
+            },
+            {
+                $sort: {
+                    createdDate: -1,
+                },
+            },
+            {
+                $skip: (pageNumber - 1) * pageSize,
+            },
+            {
+                $limit: pageSize,
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "user",
+                },
+            },
+            {
+                $unwind: "$user",
+            },
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                    content: 1,
+                    isApproved: 1,
+                    createdDate: 1,
+                    "user.firstName": 1,
+                    "user.lastName": 1,
+                },
+            },
+        ];
+
+        const blogs = await Blog.aggregate(pipeline);
+        logger.log("info", "Blog Fetched!");
+        return res.status(201).json({
+            status: "Success",
+            message: "Blog Fetched!",
+            blogs,
+        });
+    } catch (error) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server error",
+        });
+    }
+};
+
+/**
+     * This function get data from req param to fetch a blog by a question
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
+// get a specific blog
+exports.blog = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const blog = await Blog.findById(id).populate([
+            {
+                path: "userId",
+            },
+        ]);
+        if (!blog) {
+            logger.log("error", "Blog not found!");
+            return res.status(404).json({
+                status: "Fail",
+                message: "Blog not found!",
+            });
+        }
+        logger.log("info", "Succesfully got the Blog");
+        return res.status(201).send({
+            status: "Success",
+            message: "Succesfully got the Blog",
+            data: blog,
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server Error",
+        });
+    }
+};
+
+/**
+     * This function get data from req body to post/create a blog
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
+// post a new blog
+exports.createBlog = async (req, res) => {
+    const { title, content } = req.body;
+    const createdDate = Date.now();
+    const { userId } = req.body;
+
+    const blog = new Blog({
+        userId,
+        title,
+        content,
+        createdDate,
+    });
+    try {
+        await blog.save();
+        logger.log("info", "Blog posted successfully");
+        return res.status(201).json({
+            status: "Success",
+            message: "Blog posted successfully",
+            data: blog,
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server Error",
+        });
+    }
+};
+
+/**
+     * This function get data from req param to fetch a blog by an user
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
+// blog get using userId
+exports.getBlog = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const blog = await Blog.find({ userId }).populate([
+            {
+                path: "userId",
+            },
+        ]);
+        if (!blog) {
+            logger.log("error", "Data not Found");
+            return res.status(404).json({
+                status: "Fail",
+                message: "Data not Found",
+            });
+        }
+        logger.log("info", "Blog get successfully");
+        return res.status(200).json({
+            status: "Success",
+            message: "Blog get successfully",
+            data: blog,
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server Error",
+        });
+    }
+};
+
+/**
+     * This function fetch all blog title data
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
+exports.getBlogTitle = async (req, res) => {
+    try {
+        const projection = { title: 1 };
+        const blogsd = await Blog.find({ isApproved: true }, projection).exec();
+        const blogsData = blogsd.map((btitle) => ({
+            title: btitle.title,
+        }));
+        logger.log("info", "Blog Title get successfully");
+        return res.status(201).json({
+            status: "Success",
+            message: "Blog Title get successfully",
+            blogs: blogsData,
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server Error",
+        });
+    }
+};
+
+/**
+     * This function get data from req param to delete a blog
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
+// delete an existing blog
+exports.deleteBlog = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteblog = await Blog.findByIdAndDelete(id);
+        if (!deleteblog) {
+            logger.log("error", "Already deleted!");
+            return res.status(404).json({
+                status: "Fail",
+                message: "Already deleted!",
+            });
+        }
+        logger.log("info", "Succesfully deleted a blog");
+        return res.status(201).send({
+            status: "Success",
+            message: "Succesfully deleted a blog",
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server Error",
+        });
+    }
+};
+
+/**
+     * This function get data from req body to update the blog
+     * @param {Object} req req contain data that comes from client
+     * @param {Object} res res send response to client
+     * @returns {Object} server will return response in json object
+     */
+// update an existing blog
+exports.updateBlog = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const update = req.body;
+        const updatedDate = Date.now();
+        const updateblog = await Blog.findByIdAndUpdate(
+            id,
+            { ...update, updatedDate },
+            {
+                new: true,
+            },
+        );
+
+        if (!updateblog) {
+            logger.log("error", "Blog not found!");
+            return res.status(404).json({
+                status: "Fail",
+                message: "Blog not found!",
+            });
+        }
+        logger.log("info", "Succesfully updated a blog");
+        return res.status(201).send({
+            status: "Success",
+            message: "Succesfully updated a blog",
+            data: updateblog,
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server Error",
+        });
+    }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Downvote">Downvote</a></li><li><a href="global.html#Upvote">Upvote</a></li><li><a href="global.html#addAnswer">addAnswer</a></li><li><a href="global.html#blog">blog</a></li><li><a href="global.html#blogs">blogs</a></li><li><a href="global.html#createBlog">createBlog</a></li><li><a href="global.html#createQuestion">createQuestion</a></li><li><a href="global.html#deleteAnswer">deleteAnswer</a></li><li><a href="global.html#deleteBlog">deleteBlog</a></li><li><a href="global.html#deleteDocument">deleteDocument</a></li><li><a href="global.html#deleteQuestion">deleteQuestion</a></li><li><a href="global.html#editAnswer">editAnswer</a></li><li><a href="global.html#getAnswerByquestionId">getAnswerByquestionId</a></li><li><a href="global.html#getBlog">getBlog</a></li><li><a href="global.html#getBlogTitle">getBlogTitle</a></li><li><a href="global.html#getDocument">getDocument</a></li><li><a href="global.html#getDocuments">getDocuments</a></li><li><a href="global.html#postDocument">postDocument</a></li><li><a href="global.html#questionPagination">questionPagination</a></li><li><a href="global.html#readByIdQuestion">readByIdQuestion</a></li><li><a href="global.html#readByIdUser">readByIdUser</a></li><li><a href="global.html#readQuestions">readQuestions</a></li><li><a href="global.html#searchQuestion">searchQuestion</a></li><li><a href="global.html#updateBlog">updateBlog</a></li><li><a href="global.html#updateQuestion">updateQuestion</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Aug 17 2023 16:52:22 GMT+0530 (India Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

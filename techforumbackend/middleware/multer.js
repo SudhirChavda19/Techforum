@@ -1,4 +1,5 @@
 const multer = require("multer");
+const logger = require("../log/logger");
 
 const multerStorage = multer.memoryStorage();
 
@@ -7,6 +8,7 @@ const multerFilter = (req, file, cb) => {
     if (file.mimetype.split("/")[1] === "pdf") {
         cb(null, true);
     } else {
+        logger.log("error", "Not a PDF File!!");
         cb(new Error("Not a PDF File!!"), false);
     }
 };
