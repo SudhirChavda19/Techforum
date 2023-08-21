@@ -47,9 +47,9 @@ describe("Question module API testing", (suite) => {
   describe("POST /api/users/question", (suite) => {
     it("it should not post question without the body", (done) => {
       const question = {
-        // userId: "64392880c4475de3e920adab",
-        // question: "1:Unit testing nodejs module using mocha and chai",
-        // tags: ["chai", "mocha"],
+        userId: "64392880c4475de3e920adab",
+        question: "1:Unit testing nodejs module using mocha and chai",
+        tags: ["chai", "mocha"],
       };
 
       chai
