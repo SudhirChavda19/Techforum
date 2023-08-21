@@ -2,6 +2,7 @@ const chai = require("chai");
 const chaihttp = require("chai-http");
 const request = require("supertest");
 const should = chai.should();
+const logger = require("../log/logger");
 
 chai.use(chaihttp);
 
