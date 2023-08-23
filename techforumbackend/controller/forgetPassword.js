@@ -46,10 +46,11 @@ module.exports = {
       console.log("Email Response: ", response);
       return res.status(201).json({
         status: "Success",
-        message: "Reset password email sent",
+        message: "Reset password email sent", 
       });
     } catch (err) {
       logger.log("error", `Server Error: ${err}`);
+      console.log("error", `Server Error: ${err}`);
       return res.status(500).json({
         status: "Fail",
         message: "Server Error",
