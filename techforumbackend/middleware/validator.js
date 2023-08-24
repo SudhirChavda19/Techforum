@@ -218,7 +218,7 @@ const resetPasswordValidation = () => [
         .withMessage("Invalid newPassword, newPassword must have atleast one uppercase, one number,one special character and minimum 6 length"),
     check("confirmPassword").exists().withMessage("confirmPassword can't be null"),
     body("confirmPassword").notEmpty().withMessage("confirmPassword can't be empty").trim(),
-    check("confirmPassword").custom((value, { req }) => value === req.body.password).withMessage("Password not matched"),
+    check("confirmPassword").custom((value, { req }) => value === req.body.newPassword).withMessage("Password not matched"),
 ];
 
 const signUpValidation = () => [
@@ -306,7 +306,7 @@ const validate = (req, res, next) => {
     errors.array().filter((err) => err);
     return res.status(400).json({
         status: "Fail",
-        error: errors.errors[0].msg,
+        message: errors.errors[0].msg,
     });
 };
 

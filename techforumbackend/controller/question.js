@@ -17,32 +17,6 @@ exports.createQuestion = async (req, res) => {
     const { tags } = req.body;
     const createdAt = Date.now();
 
-    if (questionDescribe !== undefined) {
-        if (questionDescribe.length === 0) {
-            logger.log("error", "Question Describe can't be empty");
-            return res.status(400).json({
-                status: "Fail",
-                error: "Question Describe can't be empty",
-            });
-        }
-    }
-    if (tags !== undefined) {
-        if (tags.length === 0) {
-            logger.log("error", "Tags can't be empty");
-            return res.status(400).json({
-                status: "Fail",
-                error: "Tags can't be empty",
-            });
-        }
-        if (!Array.isArray(tags)) {
-            logger.log("error", "tags must be in Array");
-            return res.status(400).json({
-                status: "Fail",
-                error: "tags must be in Array",
-            });
-        }
-    }
-
     const questionData = await Question.findOne({ question });
     if (questionData !== null) {
         if (questionData.question === question) {

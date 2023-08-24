@@ -14,6 +14,7 @@ exports.auth = async (req, res, next) => {
     // console.log(typeof check);
     // const token = check.slice(4, check.length);
     let token = req.headers.cookie;
+    console.log("Header: ", req.headers)
     if (!token) {
         logger.log("error", "Need to Sign In");
         return res.status(401).json({
