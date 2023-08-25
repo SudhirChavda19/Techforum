@@ -41,21 +41,22 @@ export class AuthService {
       width: 'auto',
     });
   }
-  signIn(payload: { email: string; password: string }): Observable<any> {
+  signIn(payload: { emailId: string; password: string }): Observable<any> {
+    console.log("Payload: ",payload)
     return this.http.post(`${this.baseUrl}/users/signin`, payload, {withCredentials: true});
   }
 
   signUp(user: {
     firstName: string;
     lastName: string;
-    email: string;
+    emailId: string;
     password: string;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/signup`, user);
   }
 
   forgotPassword(emailId: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/forgotpassword`, emailId);
+    return this.http.post(`${this.baseUrl}/forgotpassword`, emailId, {withCredentials: true});
   }
   resetPassword(data: any): Observable<any> {
     return this.http.post(

@@ -16,8 +16,8 @@ export class ForumService {
 
   questionPagination(page: number, limit: number) {
     const params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
+      .set('pageNumber', page.toString())
+      .set('pageSize', limit.toString());
     return this.http.get<any>(`${this.baseUrl}/users/quepagination`, {
       params,
     });

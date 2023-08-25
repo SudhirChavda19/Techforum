@@ -37,7 +37,7 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
   @ViewChild('continuousFlow', { static: false }) continuousFlow: ElementRef;
   isMobile!: boolean;
   isUserAuthenticated!: boolean;
-  public allBlogs: any;
+  public allBlogs: any[];
   public allBlogst: any[];
   public allQuestions: any[] = [];
   public allBookmarks: any[] = [];
@@ -143,8 +143,9 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
       );
     } else {
       this.blogService.getAllBlogs(this.pageNumber, this.pageSize).subscribe(
-        (res) => {
-          this.allBlogs = res;
+        (res: any) => {
+          this.allBlogs = res.blogs;
+          this.allBlogs = this.allBlogs
           console.log('Blogs: ', this.allBlogs);
         },
         (err) => {
@@ -173,7 +174,6 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
   }
   startFallingWords() {
     clearInterval(this.intervalId); 
-
     this.intervalId = setInterval(() => {
       this.addRow();
     }, this.speed);
@@ -255,7 +255,6 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.allBookmarks.push(res);
           this.getBookmarkByUserId();
-          console.log("Add Bookmark: ",res);
         },
         error: (err) => {
           console.log('Error while sending the data ' + err);
@@ -289,6 +288,7 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
     const pageSize = 8;
     this.forum.questionPagination(this.currentPage, pageSize).subscribe({
       next: (res) => {
+        
         this.allQuestions = res.data;
         this.hasMore = res.hasMore;
         this.totalPages = res.totalPages;
@@ -344,7 +344,6 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
   }
 
   getBookmarkByUserId() {
-    console.log(this.userId);
     this.forum.getBookmarkByUserId(this.userId).subscribe({
       next: (res) => {
         this.allBookmarks = res.data;

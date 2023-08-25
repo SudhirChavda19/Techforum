@@ -9,7 +9,9 @@ import { map, startWith } from 'rxjs/operators';
 import { MatChipEditedEvent } from '@angular/material/chips';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { ForumService } from 'src/app/service/forum.service';
+import { commonSnackBarConfig } from 'src/app/service/snackbar-config.service';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export interface Fruit {
   tag: string;
@@ -46,7 +48,7 @@ export class CreatequestionComponent {
     tags: new FormControl('', [Validators.maxLength(11)]),
   });
 
-  constructor(private forum: ForumService, private router: Router) {
+  constructor(private forum: ForumService, private router: Router, private snackBar: MatSnackBar) {
     this.filteredFruits =
       this.CreateQuestionForm.controls.tags.valueChanges.pipe(
         startWith(null),
@@ -79,7 +81,10 @@ export class CreatequestionComponent {
 
   // public isSubmitting = false;
   questionSubmit() {
-    this.submited = true;
+    // this.submited = true;
+    console.log("Ques: ", this.CreateQuestionForm.value);
+    console.log("Ques: ", this.inputTags);
+    
     if (this.CreateQuestionForm.invalid) return;
     this.forum
       .postQuestion({
@@ -90,12 +95,15 @@ export class CreatequestionComponent {
       .subscribe({
         next: (result) => {
           console.log(result);
-          this.submited = false;
+          // this.submited = false;
+          this.snackBar.open(result.message, 'Dismiss', commonSnackBarConfig);
           this.CreateQuestionForm.reset();
           this.router.navigate(['/']);
         },
         error: (err) => {
-          alert('Error while sending the data ' + err);
+          this.snackBar.open(err.error.message, 'Dismiss', commonSnackBarConfig);
+          console.log("erorr: ", err);
+          
         },
       });
   }

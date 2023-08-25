@@ -225,7 +225,9 @@ export class QueanspageComponent {
       .subscribe({
         next: (res) => {
           console.log(res);
+          this.PostAnswer.reset();
           this.snackBar.open(res.message, 'Dismiss', commonSnackBarConfig);
+          this.getAnswerById();
         },
         error: (err) => {
           console.log('Error while sending the data ' + err);
