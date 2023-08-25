@@ -115,7 +115,9 @@ module.exports = {
       const cookie = decodeURIComponent(req.headers.cookies);
       const email = cookie.slice(6, cookie.length);
       console.log("email from cookie: ", req.headers);
+      logger.log("email from cookie: ", req.headers);
       console.log("email from cookie: ", cookie);
+      logger.log("email from cookie: ", cookie);
       console.log("email from cookie: ", email);
       if (!email || !password) {
         logger.log("error", "Missing email or password");
