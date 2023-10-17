@@ -4,12 +4,17 @@ const signoutRoutes = express.Router();
 
 signoutRoutes.post("/signout", (req, res) => {
   try {
-    const expirationTime = new Date(Date.now() + 0);
-    const expiredCookieString = `jwt=; HttpOnly; Expires=${expirationTime.toUTCString()}; Path=/api/users`;
-    res.setHeader("Set-Cookie", expiredCookieString);
-    return res.status(200).json({
-      status: 200,
-      message: "Signed out successfully",
+    // const expirationTime = new Date(Date.now() + 0);
+    // const expiredCookieString = `jwt=; HttpOnly; Expires=${expirationTime.toUTCString()}; Path=/`;
+    // res.setHeader("Set-Cookie", expiredCookieString);
+    // return res.status(200).json({
+    //   status: 200,
+    //   message: "Signed out successfully",
+    // });
+    res.clearCookie("email", { path: "/" });
+    res.clearCookie("jwt", { path: "/" }).status(200).json({
+        status: 200,
+        message: "Signed out successfully",
     });
   } catch (err) {
     logger.log("error", `Server Error: ${err}`);

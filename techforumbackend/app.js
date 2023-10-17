@@ -43,4 +43,8 @@ app.use(route);
 
 connectDatabase();
 
+app.listen(8888, () => {
+    console.log("Connected: 8888");
+})
+
 module.exports = app;

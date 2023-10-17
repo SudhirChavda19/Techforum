@@ -3,14 +3,18 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "func start",
-    "test": "mocha 'techforumbackend/test/**/*.js' --timeout 10000"
+    "start": "nodemon app.js",
+    "test": "mocha 'techforumbackend/test/**/*.js' --timeout 10000",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@azure/communication-email": "^1.0.0",
     "@azure/identity": "^3.3.0",
     "@azure/service-bus": "^7.9.0",
     "@vendia/serverless-express": "^4.10.4",
+    "axios": "^1.5.1",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -20,10 +24,13 @@
     "express-session": "^1.17.3",
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.1",
+    "memcached": "^2.2.2",
     "mongoose": "^7.4.1",
     "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.4",
+    "nodemailer": "^6.9.5",
+    "nodemailer-express-handlebars": "^6.1.0",
     "nodemon": "^3.0.1",
+    "redis": "^4.6.10",
     "winston": "^3.10.0"
   },
   "devDependencies": {
@@ -37,6 +44,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "jsdoc": "^4.0.2",
     "mocha": "^10.2.0",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "husky": "^8.0.0"
   }
 }
