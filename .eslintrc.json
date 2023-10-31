@@ -7,7 +7,7 @@
     "parserOptions": {
         "ecmaVersion": "latest"
     },
-    "ignorePatterns": ["prettify.js", "lang-css.js", "linenumber.js"],
+    "ignorePatterns": ["prettify.js", "lang-css.js", "linenumber.js", "test.spec.js"],
     "rules": {
         "no-underscore-dangle":"off",
         "no-useless-escape":"off",

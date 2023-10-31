@@ -1,7 +1,7 @@
 const express = require("express");
 require("dotenv").config();
-const route = require("./route")
 const cors = require("cors");
+const route = require("./route");
 
 const app = express();
 const connectDatabase = require("./config");
@@ -19,7 +19,7 @@ const allowCrossDomain = (req, res, next) => {
     res.header(
         "Access-Control-Allow-Origin",
         "https://main--techforum.netlify.app",
-        "https://techforum-webapp.azurewebsites.net"
+        "https://techforum-webapp.azurewebsites.net",
     );
     res.header("Access-Control-Allow-Methods", "GET,PATCH,POST,DELETE");
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -32,7 +32,7 @@ app.use(cors(corsOptions));
 app.options(
     "*",
     cors({
-        origin: ["https://main--techforum.netlify.app", "https://techforum-webapp.azurewebsites.net"], 
+        origin: ["https://main--techforum.netlify.app", "https://techforum-webapp.azurewebsites.net"],
         credentials: true,
     }),
 );
@@ -45,6 +45,6 @@ connectDatabase();
 
 app.listen(8888, () => {
     console.log("Connected: 8888");
-})
+});
 
 module.exports = app;

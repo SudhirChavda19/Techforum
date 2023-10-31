@@ -1,19 +1,18 @@
+const redis = require("redis");
 const Question = require("../model/question");
 const Bookmark = require("../model/bookmark");
 const Answer = require("../model/answer");
 const logger = require("../log/logger");
-const redis = require("redis");
-const { log } = require("winston");
 
 let redisClient;
 (async () => {
-  redisClient = redis.createClient(6379);
-  redisClient.on("connect", () => {
-    console.log("Connected to Redis");
-  });
-  redisClient.on("error", (error) => console.error(`Error : ${error}`));
+    redisClient = redis.createClient(6379);
+    redisClient.on("connect", () => {
+        console.log("Connected to Redis");
+    });
+    redisClient.on("error", (error) => console.error(`Error : ${error}`));
 
-  await redisClient.connect();
+    await redisClient.connect();
 })();
 
 /**
@@ -24,44 +23,44 @@ let redisClient;
  */
 // post a question
 exports.createQuestion = async (req, res) => {
-  const { userId } = req.body;
-  const { question } = req.body;
-  const { questionDescribe } = req.body;
-  const { tags } = req.body;
-  const createdAt = Date.now();
+    const { userId } = req.body;
+    const { question } = req.body;
+    const { questionDescribe } = req.body;
+    const { tags } = req.body;
+    const createdAt = Date.now();
 
-  const questionData = await Question.findOne({ question });
-  if (questionData !== null) {
-    if (questionData.question === question) {
-      logger.log("error", "Question already exist");
-      return res.status(400).json({
-        status: "Fail",
-        message: "Question already exist",
-      });
+    const questionData = await Question.findOne({ question });
+    if (questionData !== null) {
+        if (questionData.question === question) {
+            logger.log("error", "Question already exist");
+            return res.status(400).json({
+                status: "Fail",
+                message: "Question already exist",
+            });
+        }
     }
-  }
-  try {
-    const questionCreated = new Question({
-      userId,
-      question,
-      tags,
-      questionDescribe,
-      createdAt,
-    });
-    await questionCreated.save();
-    logger.log("info", "Question created successfully");
-    return res.status(201).json({
-      status: "Success",
-      message: "Question created successfully",
-      data: questionCreated,
-    });
-  } catch (err) {
-    logger.log("error", `Server Error: ${err}`);
-    return res.status(500).json({
-      status: "Fail",
-      error: "Server Error",
-    });
-  }
+    try {
+        const questionCreated = new Question({
+            userId,
+            question,
+            tags,
+            questionDescribe,
+            createdAt,
+        });
+        await questionCreated.save();
+        logger.log("info", "Question created successfully");
+        return res.status(201).json({
+            status: "Success",
+            message: "Question created successfully",
+            data: questionCreated,
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            error: "Server Error",
+        });
+    }
 };
 
 /**
@@ -72,80 +71,81 @@ exports.createQuestion = async (req, res) => {
  */
 // question pagination
 exports.questionPagination = async (req, res) => {
-  const page = parseInt(req.query.pageNumber, 10) || 1;
-  const limit = parseInt(req.query.pageSize, 10) || 8;
-  const skip = (page - 1) * limit;
+    console.log("REQUEST: ", req.query);
+    const page = parseInt(req.query.pageNumber, 10) || 1;
+    const limit = parseInt(req.query.pageSize, 10) || 8;
+    const skip = (page - 1) * limit;
 
-  let cacheResults;
-  let results;
-  let isCached = false;
-  try {
+    let cacheResults;
+    let results;
+    let isCached = false;
     try {
-      cacheResults = await redisClient.get("key");
-    } catch (error) {
-      console.error('Error fetching cache:', error);
-    }
+        try {
+            cacheResults = await redisClient.get("key");
+        } catch (error) {
+            console.error("Error fetching cache:", error);
+        }
 
-    if (cacheResults) {
-      isCached = true;
-      results = JSON.parse(cacheResults);
-    } else {
-      results = await Question.find()
-        .skip(skip)
-        .limit(limit)
-        .populate([
-          {
-            path: "userId",
-          },
-        ]);
-        redisClient.set('key', JSON.stringify(results),  {
-          EX: 60,
-          NX: true,
+        if (cacheResults) {
+            isCached = true;
+            results = JSON.parse(cacheResults);
+        } else {
+            results = await Question.find()
+                .skip(skip)
+                .limit(limit)
+                .populate([
+                    {
+                        path: "userId",
+                    },
+                ]);
+            redisClient.set("key", JSON.stringify(results), {
+                EX: 60,
+                NX: true,
+            });
+        }
+        const count = await Question.countDocuments();
+        const check = page * limit;
+        if (check > count) {
+            logger.log("error", "please decrease the limit or page");
+            return res.status(404).json({
+                status: "Fail",
+                message: "please decrease the limit or page",
+            });
+        }
+
+        const totalPages = Math.ceil(count / limit);
+        const hasMore = page < totalPages;
+
+        if (!results) {
+            logger.log("error", "Data Not Found");
+            return res.status(404).json({
+                status: "Fail",
+                message: "Data Not Found",
+            });
+        }
+
+        logger.log("info", "Questions Readed successfully");
+        return res
+        // .send({
+        //   fromCache: isCached,
+        //   data: results,
+        // })
+            .status(200).json({
+                status: "Success",
+                message: "Questions Readed successfully",
+                fromCache: isCached,
+                data: results,
+                nbHits: results.length,
+                totalPages,
+                hasMore,
+            });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server Error",
         });
     }
-    const count = await Question.countDocuments();
-    const check = page * limit;
-    if (check > count) {
-      logger.log("error", "please decrease the limit or page");
-      return res.status(404).json({
-        status: "Fail",
-        message: "please decrease the limit or page",
-      });
-    }
-
-    const totalPages = Math.ceil(count / limit);
-    const hasMore = page < totalPages;
-
-    if (!results) {
-      logger.log("error", "Data Not Found");
-      return res.status(404).json({
-        status: "Fail",
-        message: "Data Not Found",
-      });
-    }
-
-    logger.log("info", "Questions Readed successfully");
-    return res
-    // .send({
-    //   fromCache: isCached,
-    //   data: results,
-    // })
-    .status(200).json({
-      status: "Success",
-      message: "Questions Readed successfully",
-      fromCache: isCached,
-      data: results,
-      nbHits: results.length,
-      totalPages,
-      hasMore,
-    });
-  } catch (err) {
-    logger.log("error", `Server Error: ${err}`);
-    return res.status(500).json({
-      status: "Fail",
-      message: "Server Error",
-    });
-  }
 };
 
 /**
@@ -156,32 +156,32 @@ exports.questionPagination = async (req, res) => {
  */
 // read the questions from database
 exports.readQuestions = async (req, res) => {
-  try {
-    const questionsData = await Question.find().populate([
-      {
-        path: "userId",
-      },
-    ]);
-    if (!questionsData) {
-      logger.log("error", "Data Not Found");
-      return res.status(404).json({
-        status: "Fail",
-        message: "Data Not Found",
-      });
+    try {
+        const questionsData = await Question.find().populate([
+            {
+                path: "userId",
+            },
+        ]);
+        if (!questionsData) {
+            logger.log("error", "Data Not Found");
+            return res.status(404).json({
+                status: "Fail",
+                message: "Data Not Found",
+            });
+        }
+        logger.log("info", "Questions Readed successfully");
+        return res.status(200).json({
+            status: "Success",
+            message: "Questions Readed successfully",
+            data: questionsData,
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server Error",
+        });
     }
-    logger.log("info", "Questions Readed successfully");
-    return res.status(200).json({
-      status: "Success",
-      message: "Questions Readed successfully",
-      data: questionsData,
-    });
-  } catch (err) {
-    logger.log("error", `Server Error: ${err}`);
-    return res.status(500).json({
-      status: "Fail",
-      message: "Server Error",
-    });
-  }
 };
 
 /**
@@ -192,35 +192,35 @@ exports.readQuestions = async (req, res) => {
  */
 // get a speific question by question id
 exports.readByIdQuestion = async (req, res) => {
-  try {
-    let { id } = req.params;
-    id = id.trim();
-    const questionData = await Question.findById({ _id: id }).populate([
-      {
-        path: "userId",
-      },
-    ]);
+    try {
+        let { id } = req.params;
+        id = id.trim();
+        const questionData = await Question.findById({ _id: id }).populate([
+            {
+                path: "userId",
+            },
+        ]);
 
-    if (!questionData) {
-      logger.log("error", "Data Not Found, Please enter valid question id");
-      return res.status(404).json({
-        status: "Fail",
-        message: "Data Not Found, Please enter valid question id",
-      });
+        if (!questionData) {
+            logger.log("error", "Data Not Found, Please enter valid question id");
+            return res.status(404).json({
+                status: "Fail",
+                message: "Data Not Found, Please enter valid question id",
+            });
+        }
+        logger.log("info", "Question Readed successfully");
+        return res.status(200).json({
+            status: "Success",
+            message: "Question Readed successfully",
+            data: questionData,
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server Error",
+        });
     }
-    logger.log("info", "Question Readed successfully");
-    return res.status(200).json({
-      status: "Success",
-      message: "Question Readed successfully",
-      data: questionData,
-    });
-  } catch (err) {
-    logger.log("error", `Server Error: ${err}`);
-    return res.status(500).json({
-      status: "Fail",
-      message: "Server Error",
-    });
-  }
 };
 
 /**
@@ -231,34 +231,34 @@ exports.readByIdQuestion = async (req, res) => {
  */
 // get a speific question by user id
 exports.readByIdUser = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const questionData = await Question.find({ userId }).populate([
-      {
-        path: "userId",
-      },
-    ]);
+    try {
+        const { userId } = req.params;
+        const questionData = await Question.find({ userId }).populate([
+            {
+                path: "userId",
+            },
+        ]);
 
-    if (!questionData) {
-      logger.log("error", "Data Not Found, Please enter valid user Id");
-      return res.status(400).json({
-        status: "Fail",
-        message: "Data Not Found, Please enter valid user Id",
-      });
+        if (!questionData) {
+            logger.log("error", "Data Not Found, Please enter valid user Id");
+            return res.status(400).json({
+                status: "Fail",
+                message: "Data Not Found, Please enter valid user Id",
+            });
+        }
+        logger.log("info", "Question Readed successfully");
+        return res.status(200).json({
+            status: "Success",
+            message: "Question Readed successfully",
+            data: questionData,
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server Error",
+        });
     }
-    logger.log("info", "Question Readed successfully");
-    return res.status(200).json({
-      status: "Success",
-      message: "Question Readed successfully",
-      data: questionData,
-    });
-  } catch (err) {
-    logger.log("error", `Server Error: ${err}`);
-    return res.status(500).json({
-      status: "Fail",
-      message: "Server Error",
-    });
-  }
 };
 
 /**
@@ -270,38 +270,38 @@ exports.readByIdUser = async (req, res) => {
  */
 // update perticular question
 exports.updateQuestion = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const update = req.body;
-    const updatedAt = Date.now();
-    const updateQuestion = await Question.findByIdAndUpdate(
-      id,
-      { ...update, updatedAt },
-      {
-        new: true,
-      }
-    );
+    try {
+        const { id } = req.params;
+        const update = req.body;
+        const updatedAt = Date.now();
+        const updateQuestion = await Question.findByIdAndUpdate(
+            id,
+            { ...update, updatedAt },
+            {
+                new: true,
+            },
+        );
 
-    if (!updateQuestion) {
-      logger.log("error", "Data Not Found, Enter valid id");
-      return res.status(400).json({
-        status: "Fail",
-        message: "Data Not Found, Enter valid id",
-      });
+        if (!updateQuestion) {
+            logger.log("error", "Data Not Found, Enter valid id");
+            return res.status(400).json({
+                status: "Fail",
+                message: "Data Not Found, Enter valid id",
+            });
+        }
+        logger.log("info", "Question Updated Successfully");
+        return res.status(200).json({
+            status: "Success",
+            message: "Question Updated Successfully",
+            data: updateQuestion,
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server Error",
+        });
     }
-    logger.log("info", "Question Updated Successfully");
-    return res.status(200).json({
-      status: "Success",
-      message: "Question Updated Successfully",
-      data: updateQuestion,
-    });
-  } catch (err) {
-    logger.log("error", `Server Error: ${err}`);
-    return res.status(500).json({
-      status: "Fail",
-      message: "Server Error",
-    });
-  }
 };
 
 /**
@@ -312,28 +312,28 @@ exports.updateQuestion = async (req, res) => {
  */
 // delete perticular question
 exports.deleteQuestion = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const deleteQuestion = await Question.findByIdAndDelete(id);
-    if (!deleteQuestion) {
-      logger.log("error", "Data Not Found, Enter valid id");
-      return res.status(404).json({
-        status: "Fail",
-        message: "Data Not Found, Enter valid id",
-      });
+    try {
+        const { id } = req.params;
+        const deleteQuestion = await Question.findByIdAndDelete(id);
+        if (!deleteQuestion) {
+            logger.log("error", "Data Not Found, Enter valid id");
+            return res.status(404).json({
+                status: "Fail",
+                message: "Data Not Found, Enter valid id",
+            });
+        }
+        await Bookmark.deleteMany({ questionId: id });
+        await Answer.deleteMany({ questionId: id });
+        logger.log("info", "Question Deleted Successfully");
+        return res.status(200).json({
+            status: "Success",
+            message: "Question Deleted Successfully",
+        });
+    } catch (err) {
+        logger.log("error", `Server Error: ${err}`);
+        return res.status(500).json({
+            status: "Fail",
+            message: "Server Error",
+        });
     }
-    await Bookmark.deleteMany({ questionId: id });
-    await Answer.deleteMany({ questionId: id });
-    logger.log("info", "Question Deleted Successfully");
-    return res.status(200).json({
-      status: "Success",
-      message: "Question Deleted Successfully",
-    });
-  } catch (err) {
-    logger.log("error", `Server Error: ${err}`);
-    return res.status(500).json({
-      status: "Fail",
-      message: "Server Error",
-    });
-  }
 };

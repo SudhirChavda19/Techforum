@@ -6,6 +6,7 @@ const {
     combine, timestamp, printf,
 } = format;
 
+// eslint-disable-next-line no-shadow
 const myFormat = printf(({ level, message, timestamp }) => `${timestamp} ${level}: ${message} `);
 
 const logger = createLogger({
