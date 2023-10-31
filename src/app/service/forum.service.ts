@@ -11,14 +11,18 @@ export class ForumService {
   constructor(private http: HttpClient) {}
   private baseUrl = environment.baseUrl;
   getQuestions() {
-    return this.http.get<any>(`${this.baseUrl}/users/question`);
+    return this.http.get<any>(`${this.baseUrl}/api/users/question`);
   }
 
   questionPagination(page: number, limit: number) {
     const params = new HttpParams()
       .set('pageNumber', page.toString())
       .set('pageSize', limit.toString());
-    return this.http.get<any>(`${this.baseUrl}/users/quepagination`, {
+      console.log(page);
+      console.log( typeof limit);
+      console.log(`${this.baseUrl}/api/users/quepagination`);
+      
+    return this.http.get<any>(`${this.baseUrl}/api/users/quepagination`, {
       params,
     });
   }
@@ -32,46 +36,46 @@ export class ForumService {
   }
 
   getQuestionById(id: any) {
-    return this.http.get<any>(`${this.baseUrl}/users/question/` + id);
+    return this.http.get<any>(`${this.baseUrl}/api/users/question/` + id);
   }
 
   getAnswerById(id: any): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/users/answer/` + id);
+    return this.http.get<any>(`${this.baseUrl}/api/users/answer/` + id);
   }
 
   getTags(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/users/getalltags`);
+    return this.http.get<any>(`${this.baseUrl}/api/users/getalltags`);
   }
 
   addRemoveBookmark(data: any) {
-    return this.http.post<any>(`${this.baseUrl}/users/bookmark`, data);
+    return this.http.post<any>(`${this.baseUrl}/api/users/bookmark`, data);
   }
 
   getBookmarkByUserId(userId: any) {
-    return this.http.get<any>(`${this.baseUrl}/users/bookmark/` + userId);
+    return this.http.get<any>(`${this.baseUrl}/api/users/bookmark/` + userId);
   }
 
   upvotesAnswer(id: any, data: any) {
     return this.http.post<any>(
-      `${this.baseUrl}/users/upvote/${id}`,
+      `${this.baseUrl}/api/users/upvote/${id}`,
       data
     );
   }
 
   downvotesAnswer(id: any, data: any) {
     return this.http.post<any>(
-      `${this.baseUrl}/users/downvote/${id}`,
+      `${this.baseUrl}/api/users/downvote/${id}`,
       data
     );
   }
 
   searchQuestion(query: any) {
     return this.http.get<any>(
-      `${this.baseUrl}/users/search?question=` + query
+      `${this.baseUrl}/api/users/search?question=` + query
     );
   }
 
   getBlogTitle(){
-    return this.http.get<any>(`${this.baseUrl}/users/blogtitle`);
+    return this.http.get<any>(`${this.baseUrl}/api/users/blogtitle`);
   }
 }

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Blog } from 'src/app/model/blog';
 import { BlogService } from 'src/app/service/blog.service';
 import { Router } from '@angular/router';
-import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { UserRoleService } from 'src/app/service/user-role.service';
 @Component({
   selector: 'app-blog',
@@ -39,7 +38,6 @@ export class BlogComponent {
   constructor(
     private router: Router,
     private blogService: BlogService,
-    private ngxLoader: NgxUiLoaderService,
   ) {}
 
   ngOnInit(): void {
@@ -52,16 +50,13 @@ export class BlogComponent {
 
   // get all Data Subscribe
   getAllblogs() {
-    this.ngxLoader.start();
     this.blogService.getAllBlogs(this.pageNumber, this.pageSize).subscribe(
       (response) => {
         this.allblogs = response;
         this.totalPages=response.length
-        this.ngxLoader.stop();
       },
       (err) => {
         console.log(err);
-        this.ngxLoader.stop();
       }
     );
   }

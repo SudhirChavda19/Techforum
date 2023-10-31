@@ -14,6 +14,6 @@ export class UserRoleService {
   ) {}
 
   getUserRole(id: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/users/userrole/`+ id);
+    return this.http.get(`${this.baseUrl}/api/users/userrole/`+ id);
   }
 }

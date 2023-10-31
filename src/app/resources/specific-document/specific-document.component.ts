@@ -62,6 +62,7 @@ export class SpecificDocumentComponent {
             }, '')
           )}`;
           this.pdfSrc = pdfsrc;
+          console.log("PDF: ", this.pdfSrc);
           this.ngxLoader.stop();
         },
         (err) => {

@@ -14,7 +14,7 @@ import {
   BreakpointState,
   Breakpoints,
 } from '@angular/cdk/layout';
-import { Observable } from 'rxjs';
+import { Observable, debounce, debounceTime, distinctUntilChanged, fromEvent, map } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../service/auth.service';
 import { UserRoleService } from 'src/app/service/user-role.service';
@@ -28,6 +28,8 @@ import { ForumService } from 'src/app/service/forum.service';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
+  @ViewChild('input') input: ElementRef;
+
   public question: string;
   public searchQue: any[];
 
@@ -49,7 +51,7 @@ export class HeaderComponent implements OnInit {
     private authService: AuthService,
     private forumService: ForumService,
     private cdr: ChangeDetectorRef,
-    private userRoleService: UserRoleService
+    private userRoleService: UserRoleService,
   ) {
     this.breakpointObserver.observe(Breakpoints.Handset).subscribe((result) => {
       this.isMobile = result.matches;
@@ -83,12 +85,13 @@ export class HeaderComponent implements OnInit {
     this.sidenavToggle.emit();
   };
 
-  searchQuestion() {
-    if (this.question === '') {
+  searchQuestion(value:any) {
+    if (value === '') {
       this.searchQue = [];
       return;
     }
-    this.forumService.searchQuestion(this.question).subscribe({
+    console.log(value);
+    this.forumService.searchQuestion(value).subscribe({
       next: (res) => {
         this.searchQue = res.data;
         console.log('Search Question: ', this.searchQue);
@@ -99,9 +102,26 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  selectResult(id: any, result:any) {
+  selectResult(id: any, result: any) {
     this.question = result.question;
     this.searchQue = [];
     this.router.navigate(['queanspage', id]);
   }
+
+  // value:any;
+    ngAfterViewInit(){
+      const value = fromEvent<any>(this.input.nativeElement, 'keyup')
+      .pipe(
+        map((event:any) => {
+          return event.target.value
+        }),
+        debounceTime(1000),
+        // distinctUntilChanged()
+      )
+      value.subscribe((res:any) => {
+          console.log("RES: ",res);
+          this.searchQuestion(res)
+        }
+      )
+    }
 }

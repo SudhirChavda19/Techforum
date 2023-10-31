@@ -8,8 +8,7 @@
     <button mat-button *ngIf="!isMobile" routerLink="resources" routerLinkActive="active">Resources</button>
     <span class="spacer"></span>
     <div class="search" [class.active]='isSearchActive' style="margin-right: 8px;" *ngIf="!isMobile" >
-        <input style="height: 35px;" type="text" placeholder="Search..." [(ngModel)]="question"
-            (input)="searchQuestion()">
+        <input #input style="height: 35px;" type="text" placeholder="Search...">
             <button class="search-icon" mat-icon-button matSuffix
             (click)="isSearchActive = !isSearchActive"><mat-icon>search</mat-icon></button>
         <div *ngIf="searchQue != null && searchQue.length > 0" class="dropdown">

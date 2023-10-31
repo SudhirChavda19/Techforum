@@ -38,7 +38,7 @@
   </div>
   <div class="hr"></div>
   <div class="matcard">
-    <mat-card class="questionbox" *ngFor="let que of filteredQuestions || allQuestions">
+    <mat-card class="questionbox" *ngFor="let que of allQuestions">
       <mat-card-header class="userinfo">
         <div class="image">
           <ngx-avatars [name]="que.userId?.firstName + ' ' + que.userId?.lastName" size="32" matSuffix></ngx-avatars>

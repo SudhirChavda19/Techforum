@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>Upload Profile Photo</h1>
+
+<mat-dialog-content>
+            <div class="text-center">
+                  <input class="form-control" type="file" 
+                          (change)="chooseImage($event)" name="file">
+                          <br>
+                  <button  mat-stroked-button (click)="uploadImage()" 
+                      class="upload" color="primary">
+                      <mat-icon>file_upload</mat-icon>Upload
+                  </button>
+              </div>
+              
+</mat-dialog-content>
+

@@ -43,7 +43,7 @@ export class AuthService {
   }
   signIn(payload: { emailId: string; password: string }): Observable<any> {
     console.log("Payload: ",payload)
-    return this.http.post(`${this.baseUrl}/users/signin`, payload, {withCredentials: true});
+    return this.http.post(`${this.baseUrl}/api/users/signin`, payload, {withCredentials: true});
   }
 
   signUp(user: {
@@ -52,15 +52,15 @@ export class AuthService {
     emailId: string;
     password: string;
   }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/signup`, user);
+    return this.http.post(`${this.baseUrl}/api/signup`, user);
   }
 
   forgotPassword(emailId: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/forgotpassword`, emailId, {withCredentials: true});
+    return this.http.post(`${this.baseUrl}/api/forgotpassword`, emailId, {withCredentials: true});
   }
   resetPassword(data: any): Observable<any> {
     return this.http.post(
-      `${this.baseUrl}/forgotpassword/reset-password/`,
+      `${this.baseUrl}/api/forgotpassword/reset-password/`,
       data
     );
   }
@@ -68,6 +68,6 @@ export class AuthService {
     localStorage.removeItem('userId');
     localStorage.removeItem('userIdExpiration');
     localStorage.removeItem('name');
-    return this.http.post(`${this.baseUrl}/users/signout`, data);
+    return this.http.post(`${this.baseUrl}/api/users/signout`, data);
   }
 }

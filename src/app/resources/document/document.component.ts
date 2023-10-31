@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog  } from '@angular/material/dialog';
 import { DocumentService } from 'src/app/service/document.service';
 import { AdddocumentComponent } from '../adddocument/adddocument.component';
-import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { AllDocument } from 'src/app/model/all-document';
 
 @Component({
@@ -48,7 +47,6 @@ export class DocumentComponent {
   constructor(
     public dialog: MatDialog,
     private documentService: DocumentService,
-    private ngxLoader: NgxUiLoaderService
   ) {}
 
   openDocumentDialog(): void {
@@ -66,12 +64,10 @@ export class DocumentComponent {
   }
 
   getAllDocs() {
-    this.ngxLoader.start();
     this.documentService.getAllDoc(this.pageNumber, this.pageSize).subscribe(
       (response) => {
         this.files = response;
         this.totalPages = response.length
-        this.ngxLoader.stop();
       },
       (err) => {
         console.log(err);

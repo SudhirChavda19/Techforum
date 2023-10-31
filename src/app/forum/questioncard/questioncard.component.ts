@@ -22,6 +22,11 @@ import { SigninSignupComponent } from 'src/app/layout/header/signin-signup/signi
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, Subscription, fromEvent } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { State, Store, select } from '@ngrx/store';
+// import { map, filter, scan } from 'rxjs/operators';
+import * as fromQuestion from '../../question.selectors';
+import { QuestionActions } from 'src/app/question.actions';
+import { questionState } from 'src/app/question.reducer';
 
 @Component({
   selector: 'app-questioncard',
@@ -89,9 +94,9 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
       firstName: '',
       lastName: '',
     },
-    answer: {
-      answer: '',
-    },
+    // answer: {
+    //   answer: '',
+    // },
     question: '',
     questionDescribe: '',
     tags: [],
@@ -109,7 +114,8 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
     private blogService: BlogService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private store: Store<questionState>
   ) {
     this.breakpointObserver.observe(Breakpoints.Handset).subscribe((result) => {
       this.isMobile = result.matches;
@@ -121,6 +127,7 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
   rows: number[];
   speed = 10;
   intervalId: any;
+  
   ngOnInit() {
     this.getQuestion();
     this.getBookmarkByUserId();
@@ -134,8 +141,10 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
     if (!this.isUserAuthenticated) {
       this.forum.getBlogTitle().subscribe(
         (res) => {
+          // console.log('Blog Title: ', res);
+
           this.allBlogst = res.blogs;
-          console.log('Blogs Title: ', this.allBlogst);
+          // console.log('Blogs Title: ', this.allBlogst);
         },
         (err) => {
           console.log(err);
@@ -145,8 +154,8 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
       this.blogService.getAllBlogs(this.pageNumber, this.pageSize).subscribe(
         (res: any) => {
           this.allBlogs = res.blogs;
-          this.allBlogs = this.allBlogs
-          console.log('Blogs: ', this.allBlogs);
+          this.allBlogs = this.allBlogs;
+          // console.log('Blogs: ', this.allBlogs);
         },
         (err) => {
           console.log(err);
@@ -173,7 +182,7 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
       });
   }
   startFallingWords() {
-    clearInterval(this.intervalId); 
+    clearInterval(this.intervalId);
     this.intervalId = setInterval(() => {
       this.addRow();
     }, this.speed);
@@ -212,7 +221,7 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
     lineDiv.style.top = `${-this.lineHeight}px`;
     this.continuousFlow.nativeElement.appendChild(lineDiv);
 
-    const animationTime = 130; 
+    const animationTime = 130;
     const distance =
       this.continuousFlow.nativeElement.offsetHeight + this.lineHeight;
     const speed = distance / animationTime;
@@ -271,7 +280,7 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
   toggleBookmark(questionId: string) {
     if (!this.userId) {
       this.openSignInDialog();
-    } else {   
+    } else {
       this.isBookmarked(questionId);
       this.addBookmark(this.userId, questionId);
       this.getBookmarkByUserId();
@@ -286,9 +295,12 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
 
   getQuestion() {
     const pageSize = 8;
-    this.forum.questionPagination(this.currentPage, pageSize).subscribe({
+
+    this.store.dispatch(QuestionActions.loadQuestions({page:this.currentPage, limit:pageSize}));
+
+    this.store.pipe(select(fromQuestion.getQuestions)).subscribe({
       next: (res) => {
-        
+        console.log('NGRX DATA:::: ', res);
         this.allQuestions = res.data;
         this.hasMore = res.hasMore;
         this.totalPages = res.totalPages;
@@ -297,7 +309,6 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
           (x) => x + 1
         );
         this.getAnswerById();
-        console.log('Questions: ', this.allQuestions);
 
         this.allQuestions?.forEach((question: any) => {
           question.tags?.forEach((tag: any) => {
@@ -308,16 +319,58 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
             }
           });
         });
-        console.log('frequencies tag: ', this.tagFrequencies);
+        // console.log('frequencies tag: ', this.tagFrequencies);
         this.popularTags = Object.keys(this.tagFrequencies).filter(
           (tag) => this.tagFrequencies[tag] > 1
         );
-        console.log('populer tag: ', this.popularTags);
+        // console.log('populer tag: ', this.popularTags);
       },
       error: (err) => {
-        // alert('Error while fetching the data');
+        console.log("Error While fetching Data: ", err);
+        
       },
     });
+
+    this.store.pipe(select(fromQuestion.getError)).subscribe({
+      next: (res) => {
+        // this.allQuestions = question;
+        console.log('NGRX DATA:::: ', res);
+      },
+    });
+
+    // this.forum.questionPagination(this.currentPage, pageSize).subscribe({
+    //   next: (res) => {
+    //     console.log('Question Pagination: ', res);
+
+    //     this.allQuestions = res.data;
+    //     this.hasMore = res.hasMore;
+    //     this.totalPages = res.totalPages;
+
+    //     this.totalPageArray = [...Array(this.totalPages).keys()].map(
+    //       (x) => x + 1
+    //     );
+    //     this.getAnswerById();
+    //     // console.log('Questions: ', this.allQuestions);
+
+    //     this.allQuestions?.forEach((question: any) => {
+    //       question.tags?.forEach((tag: any) => {
+    //         if (tag in this.tagFrequencies) {
+    //           this.tagFrequencies[tag]++;
+    //         } else {
+    //           this.tagFrequencies[tag] = 1;
+    //         }
+    //       });
+    //     });
+    //     console.log('frequencies tag: ', this.tagFrequencies);
+    //     this.popularTags = Object.keys(this.tagFrequencies).filter(
+    //       (tag) => this.tagFrequencies[tag] > 1
+    //     );
+    //     console.log('populer tag: ', this.popularTags);
+    //   },
+    //   error: (err) => {
+    //     // alert('Error while fetching the data');
+    //   },
+    // });
   }
 
   onNextPage() {
@@ -355,8 +408,9 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
     });
   }
   getAnswerById() {
-    for (const question of this.allQuestions) {
+    for (let question of this.allQuestions) {
       this.forum.getAnswerById(question._id).subscribe((res: any) => {
+        question = Object.isExtensible(question) ? question : { ...question };
         question.answer =
           res.data[0] === undefined ? { answer: '' } : res.data[0];
       });
@@ -372,10 +426,10 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
   }
 
   public filterQuestion(tag: any) {
-    this.filteredQuestions = this.allQuestions.filter((question) =>
+    this.filteredQuestions = this.allQuestions.filter((question: any) =>
       question.tags?.includes(tag)
     );
-    console.log('Filterd Questions: ', this.filteredQuestions);
+    // console.log('Filterd Questions: ', this.filteredQuestions);
   }
 
   public clearFilter() {

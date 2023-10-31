@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -37,10 +37,6 @@ import { AvatarModule } from 'ngx-avatars';
 import {
   NgxUiLoaderModule,
   NgxUiLoaderConfig,
-  NgxUiLoaderHttpModule,
-  SPINNER,
-  POSITION,
-  PB_DIRECTION,
 } from 'ngx-ui-loader';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -58,6 +54,15 @@ import { GetDocumentsComponent } from './admin/admin-manage-resources/get-docume
 import { UpdateForumComponent } from './profile/manageforums/update-forum/update-forum.component';
 import { DeleteForumDialogComponent } from './profile/manageforums/delete-forum-dialog/delete-forum-dialog.component';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { SetpicComponent } from './profile/setpic/setpic.component';
+import { StoreModule, provideStore } from '@ngrx/store';
+import { reducers, metaReducers } from './reducers';
+import { EffectsModule } from '@ngrx/effects';
+import { QuestionEffects } from './question.effects';
+import { QuestionReducer } from './question.reducer';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+
+
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   fgsColor: '#00b8d4',
   fgsPosition: 'center-center',
@@ -157,6 +162,7 @@ ClassicEditor.defaultConfig = {
     UpdateBlogComponent,
     UpdateForumComponent,
     DeleteForumDialogComponent,
+    SetpicComponent,
   ],
   imports: [
     BrowserModule,
@@ -167,6 +173,12 @@ ClassicEditor.defaultConfig = {
     AvatarModule,
     NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
     CKEditorModule,
+    StoreModule.forRoot({questionsState: QuestionReducer}),
+    EffectsModule.forRoot([QuestionEffects]),
+    EffectsModule.forFeature([QuestionEffects]),
+    StoreDevtoolsModule.instrument({
+      logOnly: !isDevMode, 
+    })
   ],
   providers: [
     DocumentService,
@@ -176,6 +188,7 @@ ClassicEditor.defaultConfig = {
       multi: true,
     },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
+    provideStore({ questionsState: QuestionReducer })
   ],
   bootstrap: [AppComponent],
 })

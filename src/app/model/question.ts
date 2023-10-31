@@ -4,9 +4,9 @@ export interface Question {
      firstName: string;
      lastName: string;
     },
-    answer:{
-        answer:string
-    }
+    // answer:{
+    //     answer:string
+    // }
     question: string;
     questionDescribe:string,
     tags:string[];

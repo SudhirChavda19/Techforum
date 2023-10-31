@@ -32,7 +32,6 @@
   padding: 10px 0px 18px 0px;
   position: -webkit-sticky;
   position: sticky;
-  top: 0;
 }
 
 .flex {
@@ -148,16 +147,20 @@
   cursor: pointer;
 }
 .answer {
-  padding-top: 5px;
-  cursor: pointer;
-  width: 100%;
-}
-.answer {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  padding-top: 5px;
+  cursor: pointer;
+  width: 100%;
 }
+/* .answer {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+} */
 
 .tags {
   font-size: small;
