@@ -59,7 +59,7 @@ import { StoreModule, provideStore } from '@ngrx/store';
 import { reducers, metaReducers } from './reducers';
 import { EffectsModule } from '@ngrx/effects';
 import { QuestionEffects } from './question.effects';
-import { QuestionReducer } from './question.reducer';
+import { QuestionReducer, postQuestionReducer } from './question.reducer';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 
@@ -122,7 +122,6 @@ ClassicEditor.defaultConfig = {
     AppComponent,
     DashboardComponent,
     DashboardComponent,
-
     QuestioncardComponent,
     CreatequestionComponent,
     QueanspageComponent,
@@ -174,8 +173,9 @@ ClassicEditor.defaultConfig = {
     NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
     CKEditorModule,
     StoreModule.forRoot({questionsState: QuestionReducer}),
+    StoreModule.forFeature("questionsState", QuestionReducer),
+    StoreModule.forRoot({postQuestionsState: postQuestionReducer}),
     EffectsModule.forRoot([QuestionEffects]),
-    EffectsModule.forFeature([QuestionEffects]),
     StoreDevtoolsModule.instrument({
       logOnly: !isDevMode, 
     })
@@ -188,8 +188,8 @@ ClassicEditor.defaultConfig = {
       multi: true,
     },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
-    provideStore({ questionsState: QuestionReducer })
+    // provideStore({ questionsState: QuestionReducer })
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent],  
 })
 export class AppModule {}

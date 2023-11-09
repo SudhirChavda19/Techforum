@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment.prod';
 })
 export class ForumService {
   // private bookmarks$ = new BehaviorSubject<Bookmark[]>([]);
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
   private baseUrl = environment.baseUrl;
   getQuestions() {
     return this.http.get<any>(`${this.baseUrl}/api/users/question`);
@@ -18,9 +18,6 @@ export class ForumService {
     const params = new HttpParams()
       .set('pageNumber', page.toString())
       .set('pageSize', limit.toString());
-      console.log(page);
-      console.log( typeof limit);
-      console.log(`${this.baseUrl}/api/users/quepagination`);
       
     return this.http.get<any>(`${this.baseUrl}/api/users/quepagination`, {
       params,
@@ -28,11 +25,11 @@ export class ForumService {
   }
 
   postQuestion(data: any) {
-    return this.http.post<any>(`${this.baseUrl}/users/question`, data);
+    return this.http.post<any>(`${this.baseUrl}/api/users/question`, data);
   }
 
   postAnswer(data: any) {
-    return this.http.post<any>(`${this.baseUrl}/users/answer`, data);
+    return this.http.post<any>(`${this.baseUrl}/api/users/answer`, data);
   }
 
   getQuestionById(id: any) {

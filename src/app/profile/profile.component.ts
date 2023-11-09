@@ -73,11 +73,11 @@ export class ProfileComponent {
 
   async getImage() {
     const image = await this.indexeddb.getImage(this.userid);
-    console.log("imageDATA: ", image);
+    // console.log("imageDATA: ", image);
     
     if (image) {
       this.imageData = URL.createObjectURL(new Blob([image.imageData]));
-      console.log("******",this.imageData);
+      // console.log("******",this.imageData);
       
     } else {
       console.log('Image not found');

@@ -12,25 +12,39 @@ export class QuestionEffects {
     private questionService: ForumService
   ) {}
 
-  public pageSize = 8;
-
   loadQuestions$ = createEffect(() =>
     this.actions$.pipe(
       ofType(QuestionActions.QuestionActions.loadQuestions),
       exhaustMap((action) =>
         this.questionService.questionPagination(action.page, action.limit).pipe(
-          map((questions) => ({
-            type: QuestionActions.QuestionActions.loadQuestionsSuccess.type,
-            questions: questions,
-          })),
-          catchError((error) =>
-            of({
-              type: QuestionActions.QuestionActions.loadQuestionsFailure.type,
-              error: error.error.message,
+          map((questions) => {
+            console.log("QUESTION: ", questions);
+            return QuestionActions.QuestionActions.loadQuestionsSuccess({
+              questions: questions,
             })
-          )
+          }),
+          catchError((error) =>
+            of(QuestionActions.QuestionActions.loadQuestionsFailure({error: error.error.message}))
         )
       )
     )
-  );
+  ));
+
+  postQuestions$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(QuestionActions.PostQuestionActions.postQuestions),
+      exhaustMap((action) =>
+        this.questionService.postQuestion(action.postQuestionData).pipe(
+          map((postQuestion) => {
+            console.log("QUESTION: ", postQuestion);
+            return QuestionActions.PostQuestionActions.postQuestionsSuccess({
+              postQuestion: postQuestion,
+            })
+          }),
+          catchError((error) =>
+            of(QuestionActions.PostQuestionActions.postQuestionsFailure({error: error.error.message}))
+        )
+      )
+    )
+  ));
 }

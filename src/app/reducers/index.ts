@@ -12,11 +12,13 @@ import * as fromQuestion from '../question.reducer';
 export interface State {
 
   [fromQuestion.questionFeatureKey]: fromQuestion.questionState;
-}
+  // [fromQuestion.postQuestionFeatureKey]: fromQuestion.postQuestionState;
+};
 
 export const reducers: ActionReducerMap<State> = {
 
   [fromQuestion.questionFeatureKey]: fromQuestion.QuestionReducer,
+  // [fromQuestion.postQuestionFeatureKey]: fromQuestion.postQuestionReducer,
 };
 
 

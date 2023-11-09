@@ -94,9 +94,9 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
       firstName: '',
       lastName: '',
     },
-    // answer: {
-    //   answer: '',
-    // },
+    answer: {
+      answer: '',
+    },
     question: '',
     questionDescribe: '',
     tags: [],
@@ -295,14 +295,15 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
 
   getQuestion() {
     const pageSize = 8;
-
+    
     this.store.dispatch(QuestionActions.loadQuestions({page:this.currentPage, limit:pageSize}));
 
     this.store.pipe(select(fromQuestion.getQuestions)).subscribe({
-      next: (res) => {
+      next: (res:any) => {
         console.log('NGRX DATA:::: ', res);
+        
         this.allQuestions = res.data;
-        this.hasMore = res.hasMore;
+        this.hasMore = res.hasMore; 
         this.totalPages = res.totalPages;
 
         this.totalPageArray = [...Array(this.totalPages).keys()].map(
@@ -331,44 +332,10 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
       },
     });
 
-    this.store.pipe(select(fromQuestion.getError)).subscribe({
-      next: (res) => {
-        // this.allQuestions = question;
-        console.log('NGRX DATA:::: ', res);
-      },
-    });
-
-    // this.forum.questionPagination(this.currentPage, pageSize).subscribe({
+    // this.store.pipe(select(fromQuestion.getError)).subscribe({
     //   next: (res) => {
-    //     console.log('Question Pagination: ', res);
-
-    //     this.allQuestions = res.data;
-    //     this.hasMore = res.hasMore;
-    //     this.totalPages = res.totalPages;
-
-    //     this.totalPageArray = [...Array(this.totalPages).keys()].map(
-    //       (x) => x + 1
-    //     );
-    //     this.getAnswerById();
-    //     // console.log('Questions: ', this.allQuestions);
-
-    //     this.allQuestions?.forEach((question: any) => {
-    //       question.tags?.forEach((tag: any) => {
-    //         if (tag in this.tagFrequencies) {
-    //           this.tagFrequencies[tag]++;
-    //         } else {
-    //           this.tagFrequencies[tag] = 1;
-    //         }
-    //       });
-    //     });
-    //     console.log('frequencies tag: ', this.tagFrequencies);
-    //     this.popularTags = Object.keys(this.tagFrequencies).filter(
-    //       (tag) => this.tagFrequencies[tag] > 1
-    //     );
-    //     console.log('populer tag: ', this.popularTags);
-    //   },
-    //   error: (err) => {
-    //     // alert('Error while fetching the data');
+    //     // this.allQuestions = question;
+    //     console.log('NGRX DATA ERROR :: ', res);
     //   },
     // });
   }
@@ -429,7 +396,7 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
     this.filteredQuestions = this.allQuestions.filter((question: any) =>
       question.tags?.includes(tag)
     );
-    // console.log('Filterd Questions: ', this.filteredQuestions);
+    console.log('Filterd Questions: ', this.filteredQuestions);
   }
 
   public clearFilter() {

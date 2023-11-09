@@ -27,9 +27,9 @@ export class QueanspageComponent {
       firstName: '',
       lastName: '',
     },
-    // answer: {
-    //   answer: '',
-    // },
+    answer: {
+      answer: '',
+    },
     question: '',
     questionDescribe: '',
     tags: [],

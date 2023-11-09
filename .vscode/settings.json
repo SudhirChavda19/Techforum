@@ -1,5 +1,4 @@
 {
     "appService.defaultWebAppToDeploy": "/subscriptions/5fc23e23-5541-4c44-97d9-64afe71ad100/resourceGroups/techforum_backend/providers/Microsoft.Web/sites/techforum-webapp",
-    "appService.deploySubpath": "dist/frontend",
-    "workbench.activityBar.visible": true
+    "appService.deploySubpath": "dist/frontend"
 }
