@@ -71,21 +71,21 @@ exports.createQuestion = async (req, res) => {
  */
 // question pagination
 exports.questionPagination = async (req, res) => {
-    console.log("REQUEST: ", req.query);
     const page = parseInt(req.query.pageNumber, 10) || 1;
     const limit = parseInt(req.query.pageSize, 10) || 8;
     const skip = (page - 1) * limit;
+    // console.log("page: "+page+" limit: "+limit);
 
     let cacheResults;
     let results;
     let isCached = false;
     try {
         try {
-            cacheResults = await redisClient.get("key");
+            cacheResults = await redisClient.get(req.query.pageNumber);
         } catch (error) {
             console.error("Error fetching cache:", error);
         }
-
+        // console.log("CACHE :", cacheResults);
         if (cacheResults) {
             isCached = true;
             results = JSON.parse(cacheResults);
@@ -98,11 +98,13 @@ exports.questionPagination = async (req, res) => {
                         path: "userId",
                     },
                 ]);
-            redisClient.set("key", JSON.stringify(results), {
-                EX: 60,
+            redisClient.set(req.query.pageNumber, JSON.stringify(results), {
+                EX: 240,
                 NX: true,
             });
+            console.log("RESULT: ", results);
         }
+
         const count = await Question.countDocuments();
         const check = page * limit;
         if (check > count) {
