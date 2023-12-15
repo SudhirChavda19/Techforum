@@ -12,8 +12,6 @@ import { ForumService } from 'src/app/service/forum.service';
 import { commonSnackBarConfig } from 'src/app/service/snackbar-config.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PostQuestionActions, QuestionActions } from 'src/app/question.actions';
-import { postQuestionState } from 'src/app/question.reducer';
 import { Store, select } from '@ngrx/store';
 import * as fromQuestion from '../../question.selectors';
 
@@ -52,7 +50,7 @@ export class CreatequestionComponent {
     tags: new FormControl('', [Validators.maxLength(11)]),
   });
 
-  constructor(private forum: ForumService, private router: Router, private snackBar: MatSnackBar, private store: Store<postQuestionState>) {
+  constructor(private forum: ForumService, private router: Router, private snackBar: MatSnackBar) {
     this.filteredFruits =
       this.CreateQuestionForm.controls.tags.valueChanges.pipe(
         startWith(null),
@@ -91,33 +89,33 @@ export class CreatequestionComponent {
     
     if (this.CreateQuestionForm.invalid) return;
     
-    this.store.dispatch(PostQuestionActions.postQuestions({postQuestionData:{
-      ...this.CreateQuestionForm.value,
-      tags: this.inputTags,
-      userId: this.userId,
-    }}));
+    // this.store.dispatch(PostQuestionActions.postQuestions({postQuestionData:{
+    //   ...this.CreateQuestionForm.value,
+    //   tags: this.inputTags,
+    //   userId: this.userId,
+    // }}));
 
-    this.store.pipe(select(fromQuestion.PostQuestion)).subscribe({
-      next: (res:any) => {
-        console.log('POST DATA NGRX:: ', res);
-        this.snackBar.open(res.message, 'Dismiss', commonSnackBarConfig);
-          this.CreateQuestionForm.reset();
-          this.router.navigate(['/']);
+    // this.store.pipe(select(fromQuestion.PostQuestion)).subscribe({
+    //   next: (res:any) => {
+    //     console.log('POST DATA NGRX:: ', res);
+    //     this.snackBar.open(res.message, 'Dismiss', commonSnackBarConfig);
+    //       this.CreateQuestionForm.reset();
+    //       this.router.navigate(['/']);
         
-      },
-      error: (err) => {
-        this.snackBar.open(err.error.message, 'Dismiss', commonSnackBarConfig);
-        console.log("erorr: ", err);
+    //   },
+    //   error: (err) => {
+    //     this.snackBar.open(err.error.message, 'Dismiss', commonSnackBarConfig);
+    //     console.log("erorr: ", err);
         
-      },
-    });
+    //   },
+    // });
 
-    this.store.pipe(select(fromQuestion.postError)).subscribe({
-      next: (res) => {
-        // this.allQuestions = question;
-        console.log('NGRX DATA ERROR :: ', res);
-      },
-    });
+    // this.store.pipe(select(fromQuestion.postError)).subscribe({
+    //   next: (res) => {
+    //     // this.allQuestions = question;
+    //     console.log('NGRX DATA ERROR :: ', res);
+    //   },
+    // });
 
     this.forum
       .postQuestion({

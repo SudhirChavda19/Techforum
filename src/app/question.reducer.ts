@@ -7,59 +7,44 @@ import { Pagination } from './model/pagination';
 export const questionFeatureKey = 'questionsState';
 
 export interface questionState {
-  questions: Questions | {};
-  page:number;
-  limit:number;
+  pages: { [page: number]: Questions[] };
+  currentPage: number;
+  limit: number;
   error: string;
 }
-
 export const initialState: questionState = {
-  questions: {},
-  page:0,
-  limit:0,
+  pages: {},
+  currentPage: 0,
+  limit: 8,
   error: '',
 };
 
 const reducer = createReducer(
   initialState,
-  on(QuestionActions.loadQuestions, (state, action) => ({ ...state, page:action.page, limit:action.limit})),
-  on(QuestionActions.loadQuestionsFailure, (state, action) => {
-    return { ...state, questions: {}, error: action.error };
-  }),
-  on(QuestionActions.loadQuestionsSuccess, (state, action) => ({
+  on(QuestionActions.loadQuestions, (state, action) => ({
     ...state,
-    questions: action.questions,
-    error: '',
-  }))
+    currentPage: action.page,
+    limit: action.limit,
+  })),
+  // on(QuestionActions.setCurrentPage, (state, action) => ({
+  //   ...state,
+  //   currentPage: action.page,
+  // })),
+  on(QuestionActions.loadQuestionsFailure, (state:any, action:any) => {
+    return { ...state, pages: { ...state.pages, [state.currentPage]: [] }, error: action.error };
+  }),
+  on(QuestionActions.loadQuestionsSuccess, (state:any, action:any) => {
+    // console.log('STATE: ', state);
+    // console.log('ACTION: ', action);
+    return {
+      ...state,
+      pages: { ...state.pages, [state.currentPage]: action.questions },
+      error: '',
+    };
+  })
 );
 
-export function QuestionReducer(state:any,action:any) {
+export function QuestionReducer(state: any, action: any) {
   return reducer(state, action);
 }
 
-
-// POST Question:
-
-export const postQuestionFeatureKey = 'postQuestionState';
-export interface postQuestionState {
-  postQuestion: PostQuestion | {};
-  error: string;
-}
-
-export const initialPostState: postQuestionState = {
-  postQuestion: {},
-  error: '',
-};
-
-export const postQuestionReducer = createReducer(
-  initialState,
-  on(QuestionActions.loadQuestions, (state, action) => ({ ...state, page:action.page, limit:action.limit})),
-  on(QuestionActions.loadQuestionsFailure, (state, action) => {
-    return { ...state, questions: {}, error: action.error };
-  }),
-  on(QuestionActions.loadQuestionsSuccess, (state, action) => ({
-    ...state,
-    questions: action.questions,
-    error: '',
-  }))
-);

@@ -6,17 +6,8 @@ export const QuestionActions = createActionGroup({
   source: 'Question',
   events: {
     'Load Questions': props<{page:number, limit:number}>(),
+    // 'Set Current Page': props<{page:number}>(),
     'Load Questions Success': props<{ questions: Questions}>(),
     'Load Questions Failure': props<{ error: string }>(),
   }
 });
-
-export const PostQuestionActions = createActionGroup({
-  source: 'Question',
-  events: {
-    'Post Questions': props<{postQuestionData:any}>(),
-    'Post Questions Success': props<{ postQuestion: PostQuestion}>(),
-    'Post Questions Failure': props<{ error: string }>(),
-  }
-});
-  

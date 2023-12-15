@@ -59,7 +59,7 @@ import { StoreModule, provideStore } from '@ngrx/store';
 import { reducers, metaReducers } from './reducers';
 import { EffectsModule } from '@ngrx/effects';
 import { QuestionEffects } from './question.effects';
-import { QuestionReducer, postQuestionReducer } from './question.reducer';
+import { QuestionReducer } from './question.reducer';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 
@@ -174,7 +174,6 @@ ClassicEditor.defaultConfig = {
     CKEditorModule,
     StoreModule.forRoot({questionsState: QuestionReducer}),
     StoreModule.forFeature("questionsState", QuestionReducer),
-    StoreModule.forRoot({postQuestionsState: postQuestionReducer}),
     EffectsModule.forRoot([QuestionEffects]),
     StoreDevtoolsModule.instrument({
       logOnly: !isDevMode, 

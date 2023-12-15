@@ -20,7 +20,8 @@ import { BlogService } from 'src/app/service/blog.service';
 import { AuthService } from 'src/app/service/auth.service';
 import { SigninSignupComponent } from 'src/app/layout/header/signin-signup/signin-signup.component';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable, Subscription, fromEvent } from 'rxjs';
+import { Observable, Subscription, fromEvent, filter, switchMap } from 'rxjs';
+// import { Observable, mergeMap, of, map, catchError, exhaustMap, concatMap, switchMap } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { State, Store, select } from '@ngrx/store';
 // import { map, filter, scan } from 'rxjs/operators';
@@ -127,7 +128,7 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
   rows: number[];
   speed = 10;
   intervalId: any;
-  
+
   ngOnInit() {
     this.getQuestion();
     this.getBookmarkByUserId();
@@ -293,18 +294,75 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
     );
   }
 
+  public checkData: any;
   getQuestion() {
+    let loadingQuestions = false;
     const pageSize = 8;
-    
-    this.store.dispatch(QuestionActions.loadQuestions({page:this.currentPage, limit:pageSize}));
 
-    this.store.pipe(select(fromQuestion.getQuestions)).subscribe({
-      next: (res:any) => {
-        console.log('NGRX DATA:::: ', res);
+    const questions$ = this.store.pipe(
+      select(fromQuestion.getQuestionsForCurrentPage, {
+        currentPage: this.currentPage,
+      })
+    );
+
+    questions$
+      //   .pipe(
+      //     filter((res: any) => res.length === 0 && !this.loadingQuestions),
+      //     switchMap(() => {
+      //       // Set a flag to prevent multiple dispatches
+      //       console.log("IN SWITCH MAP");
+
+      //       this.loadingQuestions = true;
+
+      //       // this.store.dispatch(
+      //       //   QuestionActions.setCurrentPage({ page: this.currentPage })
+      //       // );
+      //       // Data for the current page is not in the store, fetch it from the backend
+      //       this.store.dispatch(
+      //         QuestionActions.loadQuestions({
+      //           page: this.currentPage,
+      //           limit: pageSize,
+      //         })
+      //       );
+
+      //       return this.store.pipe(
+      //         select(fromQuestion.getQuestionsForCurrentPage, {
+      //           currentPage: this.currentPage,
+      //         })
+      //       );
+      //     })
+      //   )
+      .subscribe((res) => {
+        // console.log("RESPONSE: ", res);
         
-        this.allQuestions = res.data;
-        this.hasMore = res.hasMore; 
-        this.totalPages = res.totalPages;
+        if (res.length === 0 && !loadingQuestions) {
+          console.log("IN IF-----");
+          loadingQuestions = true;
+          this.store.dispatch(
+            QuestionActions.loadQuestions({
+              page: this.currentPage,
+              limit: pageSize,
+            })
+          );
+
+          this.store.pipe(
+            select(fromQuestion.getQuestionsForCurrentPage, {
+              currentPage: this.currentPage,
+            })
+          ).subscribe((res) => {
+            this.checkData = res;
+          });
+        } else {
+          console.log("IN ELSE---");
+          loadingQuestions = true;
+          
+          this.checkData = res;
+        }
+        console.log('CHECKDATA-- ', this.checkData);
+
+        this.allQuestions = this.checkData.data;
+        this.hasMore = this.checkData.hasMore;
+        this.totalPages = this.checkData.totalPages;
 
         this.totalPageArray = [...Array(this.totalPages).keys()].map(
           (x) => x + 1
@@ -324,13 +382,10 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
         this.popularTags = Object.keys(this.tagFrequencies).filter(
           (tag) => this.tagFrequencies[tag] > 1
         );
+
+        loadingQuestions = false;
         // console.log('populer tag: ', this.popularTags);
-      },
-      error: (err) => {
-        console.log("Error While fetching Data: ", err);
-        
-      },
-    });
+      });
 
     // this.store.pipe(select(fromQuestion.getError)).subscribe({
     //   next: (res) => {
@@ -370,7 +425,7 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
         // console.log('bookmark get: ', this.allBookmarks);
       },
       error: (err) => {
-        console.log('Error while sending the data ' + err);
+        console.log('Error while getting the data ' + err);
       },
     });
   }
