@@ -294,98 +294,65 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
     );
   }
 
-  public checkData: any;
+  public checkData: any = {};
   getQuestion() {
     let loadingQuestions = false;
     const pageSize = 8;
-
+    console.log("store pela");
+    
     const questions$ = this.store.pipe(
       select(fromQuestion.getQuestionsForCurrentPage, {
         currentPage: this.currentPage,
       })
-    );
+      );
+      console.log("store pechhhi");
 
-    questions$
-      //   .pipe(
-      //     filter((res: any) => res.length === 0 && !this.loadingQuestions),
-      //     switchMap(() => {
-      //       // Set a flag to prevent multiple dispatches
-      //       console.log("IN SWITCH MAP");
+    questions$.subscribe((res) => {
+      console.log('RESPONSE: ', res.data?.length);
 
-      //       this.loadingQuestions = true;
-
-      //       // this.store.dispatch(
-      //       //   QuestionActions.setCurrentPage({ page: this.currentPage })
-      //       // );
-      //       // Data for the current page is not in the store, fetch it from the backend
-      //       this.store.dispatch(
-      //         QuestionActions.loadQuestions({
-      //           page: this.currentPage,
-      //           limit: pageSize,
-      //         })
-      //       );
-
-      //       return this.store.pipe(
-      //         select(fromQuestion.getQuestionsForCurrentPage, {
-      //           currentPage: this.currentPage,
-      //         })
-      //       );
-      //     })
-      //   )
-      .subscribe((res) => {
-        // console.log("RESPONSE: ", res);
-        
-        if (res.length === 0 && !loadingQuestions) {
-          console.log("IN IF-----");
-          loadingQuestions = true;
-          this.store.dispatch(
-            QuestionActions.loadQuestions({
-              page: this.currentPage,
-              limit: pageSize,
-            })
-          );
-
-          this.store.pipe(
-            select(fromQuestion.getQuestionsForCurrentPage, {
-              currentPage: this.currentPage,
-            })
-          ).subscribe((res) => {
-            this.checkData = res;
-          });
-        } else {
-          console.log("IN ELSE---");
-          loadingQuestions = true;
-          
-          this.checkData = res;
-        }
-        console.log('CHECKDATA-- ', this.checkData);
-
-        this.allQuestions = this.checkData.data;
-        this.hasMore = this.checkData.hasMore;
-        this.totalPages = this.checkData.totalPages;
-
-        this.totalPageArray = [...Array(this.totalPages).keys()].map(
-          (x) => x + 1
+      if (res.data?.length === undefined && !loadingQuestions) {
+        console.log('IN IF-----');
+        loadingQuestions = true;
+        this.store.dispatch(
+          QuestionActions.loadQuestions({
+            page: this.currentPage,
+            limit: pageSize,
+          })
         );
-        this.getAnswerById();
+      } else {
+        console.log('IN ELSE--');
+        loadingQuestions = true;
 
-        this.allQuestions?.forEach((question: any) => {
-          question.tags?.forEach((tag: any) => {
-            if (tag in this.tagFrequencies) {
-              this.tagFrequencies[tag]++;
-            } else {
-              this.tagFrequencies[tag] = 1;
-            }
-          });
+        this.checkData = res;
+      }
+      console.log('CHECKDATA--', this.checkData);
+
+      this.allQuestions = this.checkData.data;
+      this.hasMore = this.checkData.hasMore;
+      this.totalPages = this.checkData.totalPages;
+
+      this.totalPageArray = [...Array(this.totalPages).keys()].map(
+        (x) => x + 1
+      );
+
+      this.allQuestions?.forEach((question: any) => {
+        question.tags?.forEach((tag: any) => {
+          if (tag in this.tagFrequencies) {
+            this.tagFrequencies[tag]++;
+          } else {
+            this.tagFrequencies[tag] = 1;
+          }
         });
-        // console.log('frequencies tag: ', this.tagFrequencies);
-        this.popularTags = Object.keys(this.tagFrequencies).filter(
-          (tag) => this.tagFrequencies[tag] > 1
-        );
-
-        loadingQuestions = false;
-        // console.log('populer tag: ', this.popularTags);
       });
+      // console.log('frequencies tag: ', this.tagFrequencies);
+      this.popularTags = Object.keys(this.tagFrequencies).filter(
+        (tag) => this.tagFrequencies[tag] > 1
+      );
+
+      // this.getAnswerById();
+      loadingQuestions = false;
+      // console.log('populer tag: ', this.popularTags);
+    });
 
     // this.store.pipe(select(fromQuestion.getError)).subscribe({
     //   next: (res) => {
@@ -430,7 +397,7 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
     });
   }
   getAnswerById() {
-    for (let question of this.allQuestions) {
+    for (let question of this.allQuestions || []) {
       this.forum.getAnswerById(question._id).subscribe((res: any) => {
         question = Object.isExtensible(question) ? question : { ...question };
         question.answer =

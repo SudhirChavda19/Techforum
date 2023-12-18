@@ -15,7 +15,7 @@ export interface questionState {
 export const initialState: questionState = {
   pages: {},
   currentPage: 0,
-  limit: 8,
+  limit: 0,
   error: '',
 };
 
