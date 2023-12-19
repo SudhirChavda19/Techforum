@@ -298,20 +298,18 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
   getQuestion() {
     let loadingQuestions = false;
     const pageSize = 8;
-    console.log("store pela");
     
     const questions$ = this.store.pipe(
       select(fromQuestion.getQuestionsForCurrentPage, {
         currentPage: this.currentPage,
       })
       );
-      console.log("store pechhhi");
 
     questions$.subscribe((res) => {
-      console.log('RESPONSE: ', res.data?.length);
+      // console.log('RESPONSE: ', res.data?.length);
 
       if (res.data?.length === undefined && !loadingQuestions) {
-        console.log('IN IF-----');
+        // console.log('IN IF-----');
         loadingQuestions = true;
         this.store.dispatch(
           QuestionActions.loadQuestions({
@@ -320,7 +318,7 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
           })
         );
       } else {
-        console.log('IN ELSE--');
+        // console.log('IN ELSE--');
         loadingQuestions = true;
 
         this.checkData = res;
@@ -349,7 +347,9 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
         (tag) => this.tagFrequencies[tag] > 1
       );
 
-      // this.getAnswerById();
+      this.getAnswerById();
+      console.log("ALLLLLL:: ", this.allQuestions);
+      
       loadingQuestions = false;
       // console.log('populer tag: ', this.popularTags);
     });
@@ -399,10 +399,14 @@ export class QuestioncardComponent implements OnInit, AfterViewInit {
   getAnswerById() {
     for (let question of this.allQuestions || []) {
       this.forum.getAnswerById(question._id).subscribe((res: any) => {
+        // console.log("ANSWERS::::", res?.data[0]);
+        
         question = Object.isExtensible(question) ? question : { ...question };
         question.answer =
-          res.data[0] === undefined ? { answer: '' } : res.data[0];
+        res.data[0] === undefined ? { answer: '' } : res.data[0].answer;
+        console.log("ANSWERS::::", question);
       });
+      
     }
   }
   public getBlog(id: any) {

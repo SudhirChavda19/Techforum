@@ -55,8 +55,8 @@
       <mat-card-content class="forum">
         <div (click)="queClick($event, que._id)">
           <mat-card-title class="question">{{ que.question }}</mat-card-title>
-          <div class="answer" [innerHTML]="que.answer?.answer">
-            {{ que.answer?.answer }}
+          <div class="answer" [innerHTML]="que.answer">
+            {{ que.answer }}
           </div>
         </div>
         <mat-chip-set class="tags">
